@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Royalties",
+    "description": "Royalties to be paid out to authors",
+    "is_deductible": "0",
+    "is_reserved": "0",
+    "is_active": "1"
+  }
+]

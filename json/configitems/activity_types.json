@@ -1,0 +1,8 @@
+[
+  {
+    "name": "BlendleImport_ArticleData",
+    "label": "Blendle import: article data",
+    "description": "Activity added by Blendle Import extension.",
+    "is_active": 1
+  }
+]

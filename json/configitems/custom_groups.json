@@ -1,0 +1,37 @@
+{
+  "blendle_import": {
+    "name": "Blendle_Import",
+    "title": "Blendle Import",
+    "extends": "Activity",
+    "extends_entity_column_value": [
+      "75"
+    ],
+    "style": "Inline",
+    "collapse_display": "0",
+    "weight": "11",
+    "is_active": "1",
+    "table_name": "civicrm_value_blendle_import_11",
+    "is_multiple": "0",
+    "collapse_adv_display": "0",
+    "is_reserved": "0",
+    "fields": [
+      {
+        "name": "Import_Job_ID",
+        "label": "Import Job ID",
+        "data_type": "Int",
+        "html_type": "Text",
+        "is_required": "0",
+        "is_searchable": "1",
+        "is_search_range": "0",
+        "weight": "1",
+        "is_active": "1",
+        "is_view": "1",
+        "text_length": "255",
+        "note_columns": "60",
+        "note_rows": "4",
+        "column_name": "import_job_id_55",
+        "in_selector": "0"
+      }
+    ]
+  }
+}

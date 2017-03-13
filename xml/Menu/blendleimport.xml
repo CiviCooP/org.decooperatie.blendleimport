@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/blendleimport</path>
+    <page_callback>CRM_BlendleImport_Page_JobList</page_callback>
+    <title>Blendle Import Jobs</title>
+    <access_arguments>edit all contacts, import contacts</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/blendleimport/import</path>
+    <page_callback>CRM_BlendleImport_Form_Import</page_callback>
+    <title>Run Import</title>
+    <access_arguments>edit all contacts, import contacts</access_arguments>
+  </item>
+</menu>

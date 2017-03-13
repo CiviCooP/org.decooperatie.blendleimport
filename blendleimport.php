@@ -2,6 +2,28 @@
 
 require_once 'blendleimport.civix.php';
 
+
+/**
+ * Implements hook_civicrm_navigationMenu().
+ * Add a menu item for this extension.
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function blendleimport_civicrm_navigationMenu(&$menu) {
+  _blendleimport_civix_insert_navigation_menu($menu, 'Contacts', array(
+    'label' => ts('Blendle Import', array('domain' => 'org.decooperatie.blendleimport')),
+    'name' => 'blendleimport',
+    'url' => 'civicrm/blendleimport',
+    'permission' => 'edit all contacts,import contacts',
+    'operator' => 'AND',
+    'separator' => 0,
+  ));
+  _blendleimport_civix_navigationMenu($menu);
+}
+
+
+/* --- Default Civix hooks follow --- */
+
+
 /**
  * Implements hook_civicrm_config().
  *
@@ -121,4 +143,3 @@ _blendleimport_civix_civicrm_angularModules($angularModules);
 function blendleimport_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _blendleimport_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
-

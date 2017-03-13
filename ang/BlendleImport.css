@@ -1,0 +1,77 @@
+/* CSS for BlendleImportWizard UI */
+
+#blendle-import-wizard .crm-ui-custom-buttons {
+    float: right;
+    clear: both;
+    margin: 20px 0 15px 0;
+}
+
+#blendle-import-wizard .crm-wizard-buttons {
+    display: none;
+}
+
+#blendle-import-wizard .crm-back-button {
+    margin: -10px 0 15px 0;
+}
+
+#blendle-import-wizard .clear-link {
+    cursor: pointer;
+    display: block;
+    font-size: 10px;
+}
+
+#blendle-import-wizard .ng-link {
+    cursor: pointer;
+}
+
+#blendle-import-wizard .crm-form-text, #blendle-import-wizard #csv-upload {
+    width: 80%;
+    font-size: 14px;
+}
+
+#blendle-import-wizard input[type=file] {
+    border: 0 !important;
+}
+
+/* CSS for CSVImportHelper based UI (wizard-step2) */
+
+table.csv-helper tr {
+    background: #eee;
+    border-bottom: solid 1px #e8e8e8;
+}
+
+table.csv-helper tr.found {
+    background-color: #e0ffd0;
+}
+
+table.csv-helper tr.chosen {
+    background-color: #d8f8c0;
+}
+
+table.csv-helper tr.multiple {
+    background-color: #f0e0d0;
+}
+
+table.csv-helper tr.impossible {
+    background-color: #f0c8c0;
+}
+
+table.csv-helper ul {
+    list-style: disc inside;
+    padding-left: 0.6em;
+}
+
+div.csv-helper-cols {
+    display: flex;
+}
+
+div.csv-helper-cols__left {
+    flex: 1 1 auto;
+    padding-right: 1rem;
+}
+
+div.csv-helper-cols__right {
+    text-align: right;
+    flex: 0 auto;
+}
+

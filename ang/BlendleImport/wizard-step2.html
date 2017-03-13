@@ -1,0 +1,84 @@
+<h2>{{ts('Match Contacts')}}</h2>
+
+<p>{{ts('Match all imported lines from the CSV file to CiviCRM contacts, then press \'Save & Continue\' at the bottom of the page to continue the import.')}}<br>
+    {{ts('First match all existing contacts, then create new contacts for the remaining entries if necessary. Author names that appear multiple times in the import file only appear once here - all records will be automatically updated.')}}
+</p>
+
+<div class="help" ng-show="job_records.length == 0">
+    <p><em>{{ts('Something went wrong - no records available!')}}</em></p>
+</div>
+
+<div ng-hide="job_records.length == 0">
+    <p>
+        <!-- ng-show="countRecordsNoMatch()" -->
+        <button crm-confirm="{message: ts('Create %1 missing contacts?', {1: countRecordsNoMatch()}) }" on-yes="createContacts()">{{ ts('Create Missing Contacts') }}
+        </button>
+        <button ng-click="recheckRecords()">Re-check</button>
+    </p>
+    <table class="csv-helper">
+        <thead>
+        <tr>
+            <th>Who</th>
+            <th>Resolution
+            <th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="(rowIndex, row) in job_records" class="{{ row.state }}">
+            <td>
+                {{ row.byline }}
+                <!-- <br><em>[debug: {{row.id }} {{ row.contact_id }} {{ row.state }}]</em> -->
+            </td>
+            <td>
+                <!-- chosen/found contact  -->
+                <div ng-if="(row.state == 'chosen' || row.state == 'found') && row.contact_id != null">
+                    <div class="csv-helper-cols">
+                        <div class="csv-helper-cols__left">
+                            <span ng-if="row.state == 'chosen'">Chosen</span>
+                            <span ng-if="row.state == 'found'">Found</span>
+                            <a class="ng-link" ng-click="viewContact(row.contact_id)">{{ row.contact_id }} {{ row.resolution[row.contact_id].name }}</a>
+                        </div>
+                        <div class="csv-helper-cols__right">
+                            <button ng-click="unChooseContact()">{{ ts( row.state == 'chosen' ? 'Reset' : 'Change' )
+                                }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- multiple matches -->
+                <div ng-if="(row.state == 'multiple' || row.state == 'impossible') && row.resolution_count > 0">
+                    {{ row.resolution_count > 1 ? "Several candidates" : "Candidate" }} found:
+                    <ul>
+                        <li ng-repeat="(resolutionIndex, contact) in row.resolution">
+                            <button ng-click="chooseContact()">Choose</button>
+                            {{ contact.match }}:
+                            <a class="ng-link" ng-click="viewContact(contact.contact_id)">({{ contact.contact_id }}) {{ contact.name }}</a>
+                        </li>
+                    </ul>
+                    <input crm-entityref="{entity: 'Contact', select: {allowClear:true, placeholder:ts('Or Select Different Contact')}}" ng-change="chooseContact2()" ng-model="row.contact_id"/>
+                </div>
+                <!-- too many candidates -->
+                <div ng-if="row.state == 'multiple' && row.resolution_count == 0">
+                    {{ ts('More than 10 candidate contacts.') }}<br>
+                    <input crm-entityref="{entity: 'Contact', select: {allowClear:true, placeholder:ts('Select Contact')}}"
+                           ng-change="chooseContact2()" ng-model="row.contact_id"/>
+                </div>
+                <div ng-if="row.state == 'impossible' && row.resolution_count == 0">
+                    {{ ts('No matches.') }}<br>
+                    <input crm-entityref="{entity: 'Contact', select: {allowClear:true, placeholder:ts('Select Contact')}}" ng-change="chooseContact2()" ng-model="row.contact_id"/>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="crm-ui-custom-buttons">
+    <button crm-icon="fa-caret-right fa-lg" title="{{ts('Upload and continue')}}" ng-click="submitStep2()">{{ts('Save & Continue')}}
+    </button>
+    <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="skipGoto(2)"
+            ng-show="job.id && job.status != 'new' && job.status != 'contacts'">{{ts('Skip')}}
+    </button>
+</div>
+
+</div>

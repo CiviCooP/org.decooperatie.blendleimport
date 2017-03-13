@@ -1,0 +1,82 @@
+<div class="import-help-new" ng-show="!job.id">
+    <h2>{{ts('New Import')}}</h2>
+    <p>{{ts('Upload a CSV file and fill in the information below, then press \'Save & Continue\'.')}}</p>
+</div>
+<div class="import-help-edit" ng-show="job.id">
+    <h2>{{ts('Continue Import')}}</h2>
+    <p>{{ts('You\'re continuing an unfinished import job. All steps that have already been completed can be skipped - repeating steps may result in duplicate data.')}}</p>
+</div>
+
+<div class="crm-block crm-form-block">
+    <table class="form-layout-compressed">
+        <tr>
+            <td class="label"><label for="csv-upload">{{ts('CSV file')}}<span class="crm-marker">*</span></label>
+            </td>
+            <td>
+                                <span class="data-present" ng-show="job.record_count > 0">
+                                    <span crm-icon="fa-check-circle"></span> {{ts('Data uploaded')}} ({{job.record_count}} {{ts('records')}})<br>
+                                </span>
+                <input crm-filereader ng-model="job.csv_upload" type="file" id="csv-upload" name="csv-upload" accept=".csv" />
+                <br><span class="description">{{ts('Upload a new CSV export file from Blendle here, without any modifications.')}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="label"><label for="job-name">{{ts('Import Job Name')}}<span
+                    class="crm-marker">*</span></label></td>
+            <td><input id="job-name" type="text" ng-model="job.name"
+                       class="crm-form-text" placeholder="{{ts('E.g. Import Job November 2017')}}"
+                       required/></td>
+        </tr>
+        <tr>
+            <td class="label"><label for="job-publication">{{ts('Publication Name')}}<span
+                    class="crm-marker">*</span></label></td>
+            <td><input id="job-publication" type="text" ng-model="job.publication" class="crm-form-text"
+                       placeholder="{{ts('E.g. Reporters Online')}}" required/>
+                <br><span class="description">{{ts('These values will be used in generated activities, payments and emails.')}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="label"><label for="job-import-date">{{ts('Import Date')}}<span
+                    class="crm-marker">*</span></label></td>
+            <td><input crm-ui-datepicker="{time:false}" id="job-import-date"
+                       ng-model="job.import_date" class="crm-form-text" placeholder="Date" required/>
+                <br><span class="description">{{ts('This date is used as the creation date for all generated activities and payments.')}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="label">
+                <label for="job-add-tag">{{ts('Add Tag?')}}</label>
+                <a class="clear-link" ng-show="job.add_tag!=null" ng-click="job.add_tag=null" title="{{ts('Clear Tag')}}">{{ts('clear')}}</a>
+            </td>
+            <td><input crm-entityref="{entity:'Tag', select:{allowClear:true}}" id="job-add-tag"
+                       ng-model="job.add_tag"/>
+                <br><span class="description">{{ts('All contacts touched by this import will get the tag you select here.')}}</span></td>
+        </tr>
+        <tr>
+            <td class="label">
+                <label for="job-add-membership-type">{{ts('Create Membership?')}}</label>
+                <a class="clear-link" ng-show="job.add_membership_type!=null" ng-click="job.add_membership_type=null"
+                   title="{{ts('Clear Membership')}}">{{ts('clear')}}</a>
+            </td>
+            <td><input crm-entityref="{entity:'MembershipType', select:{allowClear:true}}"
+                       id="job-add-membership-type" ng-model="job.add_membership_type"/>
+                <br><span class="description">{{ts('A membership of this type will be created for all contacts in this import.')}}</span></td>
+            </td>
+        </tr>
+    </table>
+
+    <div class="crm-ui-custom-buttons">
+        <button crm-icon="fa-caret-right fa-lg" title="{{ts('Upload and continue')}}" ng-click="submitStep1()">{{ts('Save & Continue')}}</button>
+        <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="loadThenGotoStep2()"
+                ng-show="job.id && job.status != 'new'">{{ts('Skip')}}</button>
+    </div>
+</div>

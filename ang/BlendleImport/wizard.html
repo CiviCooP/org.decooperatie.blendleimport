@@ -1,0 +1,43 @@
+<div class="crm-container" id="blendle-import-wizard">
+
+    <div class="crm-back-button">
+        <button crm-icon="fa-angle-left" ng-click="leave()">{{ts('Exit Wizard')}}</button>
+    </div>
+
+    <div class="crm-title">
+        <h1 class="title">{{ts('Blendle Import Wizard')}}</h1>
+    </div>
+
+    <form name="crmBlendleImport" novalidate>
+
+        <div class="crm-wizard" crm-ui-wizard="uiWizardCtrl">
+
+            <div crm-ui-wizard-step crm-title="ts('Upload CSV')" ng-form="uploadForm">
+                <div ng-include="includeTemplateNames[0]"></div>
+            </div>
+
+            <div crm-ui-wizard-step crm-title="ts('Match Contacts')" ng-form="contactsForm">
+                <div ng-include="includeTemplateNames[1]"></div>
+            </div>
+
+            <div crm-ui-wizard-step crm-title="ts('Import Articles')" ng-form="activitiesForm">
+                <div ng-include="includeTemplateNames[2]"></div>
+            </div>
+
+            <div crm-ui-wizard-step crm-title="ts('Generate Payments')" ng-form="contributionsForm">
+                <div ng-include="includeTemplateNames[3]"></div>
+            </div>
+
+            <div crm-ui-wizard-step crm-title="ts('Done!')" ng-form="completeForm">
+                <div ng-include="includeTemplateNames[4]"></div>
+            </div>
+
+            <div class="clear"></div>
+
+        </div>
+    </form>
+</div>
+
+<div class="clear"></div>
+
+<div crm-ui-debug="row"></div>
