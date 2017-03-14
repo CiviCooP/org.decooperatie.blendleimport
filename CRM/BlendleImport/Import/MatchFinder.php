@@ -169,6 +169,7 @@ class CRM_BlendleImport_Import_MatchFinder {
    * @return void
    */
   protected function storeResult($result, &$record, $matchTypeDescr) {
+
     if (count($result) > 1) {
       $record->state = 'multiple';
       $record->contact_id = NULL;
@@ -197,8 +198,9 @@ class CRM_BlendleImport_Import_MatchFinder {
     }
 
     $record->resolution = serialize($record->resolution);
-    $record->save();
-  }
 
+    $record->save();
+    $record->updateChildren();
+  }
 
 }

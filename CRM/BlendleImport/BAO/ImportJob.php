@@ -170,7 +170,7 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
 
     $params = ['job_id' => $this->id];
     if(!$rematchAll) {
-      // $params['state'] = ['IS NULL' => TRUE];
+      $params['parent'] = ['IS NULL' => TRUE];
       $params['contact_id'] = ['IS NULL' => TRUE];
     }
 
@@ -240,19 +240,14 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
         }
 
         $record->contact_id = $contact['id'];
+        $record->state = 'found';
+
         $createdCache[$record->byline] = $contact['id'];
       }
 
       // Save updated record(s)
-      $updateRecords = new CRM_BlendleImport_BAO_ImportRecord;
-      $updateRecords->whereAdd('byline = "' . CRM_Utils_Type::escape($record->byline, 'String') .    '"');
-      $updateRecords->state = 'found';
-      $updateRecords->resolution = serialize([
-        'contact_id' => $record->contact_id,
-        'match' => ts('Created'),
-        'name' => $names['last'] . ', ' . $names['first'],
-      ]);
-      $updateRecords->update(DB_DATAOBJECT_WHEREADD_ONLY);
+      $record->save();
+      $record->updateChildren();
     }
 
     return count($createdCache);

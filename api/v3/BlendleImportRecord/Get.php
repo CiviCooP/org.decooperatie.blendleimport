@@ -26,5 +26,5 @@ function civicrm_api3_blendle_import_record_get($params) {
 function _civicrm_api3_blendle_import_record_get_spec(&$spec) {
   $spec = CRM_BlendleImport_BAO_ImportRecord::fields();
   $spec['job_id']['api.required'] = TRUE;
-  $spec['is_unique']['api.default'] = TRUE;
+  $spec['parent']['api.default'] = ['IS NULL' => TRUE];
 }

@@ -20,6 +20,11 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     $result = [];
     $instance = new static;
 
+    // Parent defaults to null (meaning each unique author will only be returned once)
+    if(!isset($params['parent'])) {
+      $params['parent'] = ['IS NULL' => TRUE];
+    }
+
     // Quick hack: not sure how to best support IS NULL, added manually this way
     foreach($params as $paramName => $param) {
       if(is_array($param) && isset($param['IS NULL'])) {
@@ -28,15 +33,10 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
       }
     }
 
-    // Is unique defaults to yes (meaning each unique byline will only be returned once)
-    if(!isset($params['is_unique'])) {
-      $params['is_unique'] = 1;
-    }
-
+    // Find and fetch items
     if (!empty($params)) {
       $instance->copyValues($params);
     }
-
     $instance->find();
 
     while ($instance->fetch()) {
@@ -108,21 +108,11 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     $instance->copyValues($params);
     $instance->save();
 
-    // What is the best way to reload + return object? Currently handled like this:
-    if(!empty($params['id']) || $returnObject) {
-      $instance->find(TRUE);
-    }
+    // What is the best way to reload + return object? The best I could think of:
+    $instance->find(TRUE);
 
-    // Update all records with similar author names? (using this very interesting data access model)
-    if(!empty($params['id']) && (!isset($params['update_all']) || $params['update_all'] == TRUE)) {
-      $similar = new static;
-      $similar->contact_id = $instance->contact_id;
-      $similar->state = $instance->state;
-      $similar->resolution = $instance->resolution;
-      $similar->whereAdd('byline = "' . CRM_Utils_Type::escape($instance->byline, 'String') .    '"');
-      $similar->whereAdd('is_unique = 0');
-      $similar->update(DB_DATAOBJECT_WHEREADD_ONLY);
-    }
+    // Update all records with the same author name
+    $instance->updateChildren();
 
     // That's it!
     CRM_Utils_Hook::post($hook, get_class($instance), $instance->id, $instance);
@@ -140,6 +130,25 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     $row['resolution'] = unserialize($row['resolution']);
     $row['resolution_count'] = (is_array($row['resolution']) ? count($row['resolution']) : 0);
     return $row;
+  }
+
+  /**
+   * Update matching info for all records that have parent = this.id.
+   * Make sure $this is a proper object that contains contact_id, state and resolution.
+   * @return mixed Query result
+   * @throws CRM_BlendleImport_Exception If called for a record that hasn't been saved yet
+   */
+  public function updateChildren() {
+    if(empty($this->id)) {
+      throw new CRM_BlendleImport_Exception('Could not update children: parent object has no id.');
+    }
+
+    $tableName = $this->getTableName();
+    return CRM_Core_DAO::executeQuery("
+      UPDATE {$tableName} target
+      JOIN {$tableName} source ON target.parent = source.id
+      SET target.contact_id = source.contact_id, target.state = source.state, target.resolution = source.resolution
+      WHERE source.id = '" . CRM_Utils_Type::escape($this->id, 'Positive') . "'");
   }
 
 }

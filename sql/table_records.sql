@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_blendleimport_records` (
   approximated_sales_amount_eur FLOAT(10, 2) UNSIGNED     DEFAULT NULL,
   approximated_revenue_eur      FLOAT(10, 2) UNSIGNED     DEFAULT NULL,
   price                         FLOAT(6, 4) UNSIGNED      DEFAULT NULL,
-  is_unique                     INT(1) UNSIGNED           DEFAULT NULL,
+  parent                        INT(10) UNSIGNED           DEFAULT NULL,
   state                         VARCHAR(12)               DEFAULT NULL,
   resolution                    VARCHAR(4096)             DEFAULT NULL,
   PRIMARY KEY (id)
@@ -28,6 +28,8 @@ ALTER TABLE `civicrm_blendleimport_records`
   ADD KEY `job_id` (`job_id`),
   ADD KEY `contact_id` (`contact_id`),
   ADD KEY `state` (`state`),
-  ADD KEY `is_unique` (`is_unique`),
+  ADD KEY `parent` (`parent`),
   ADD CONSTRAINT `FK_civicrm_blendleimport_records_job_id` FOREIGN KEY (`job_id`) REFERENCES `civicrm_blendleimport_job` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_civicrm_blendleimport_records_contact_id` FOREIGN KEY(`contact_id`) REFERENCES `civicrm_contact` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+  ADD CONSTRAINT `FK_civicrm_blendleimport_records_contact_id` FOREIGN KEY(`contact_id`) REFERENCES `civicrm_contact` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+  ADD CONSTRAINT `FK_civicrm_blendleimport_records_parent_id` FOREIGN KEY(`parent`) REFERENCES `civicrm_blendleimport_records` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
+;

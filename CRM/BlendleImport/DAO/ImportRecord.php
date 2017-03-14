@@ -23,7 +23,7 @@
  * @property float $approximated_sales_amount_eur
  * @property float $approximated_revenue_eur
  * @property float $price
- * @property bool $is_unique
+ * @property int $parent
  * @property string $state
  * @property string $resolution
  */
@@ -139,10 +139,12 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'type'  => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Price'),
         ],
-        'is_unique'                         => [
-          'name'      => 'is_unique',
-          'type'      => CRM_Utils_Type::T_BOOLEAN,
-          'title'     => ts('Is Author Unique?'),
+        'parent'                         => [
+          'name'      => 'parent',
+          'type'      => CRM_Utils_Type::T_INT,
+          'title'     => ts('Parent Record ID'),
+          'default' => NULL,
+          'FKClassName' => 'CRM_BlendleImport_DAO_ImportRecord',
         ],
         'state'                         => [
           'name'      => 'state',

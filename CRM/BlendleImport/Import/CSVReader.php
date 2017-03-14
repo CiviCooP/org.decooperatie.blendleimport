@@ -56,13 +56,10 @@ class CRM_BlendleImport_Import_CSVReader {
       $record = new CRM_BlendleImport_BAO_ImportRecord;
       $record->job_id = $this->job_id;
 
-      // Check and set is_unique based on byline
-      if(isset($row['byline'])) {
-        $record->is_unique = 0;
-        if(!in_array($row['byline'], $bylineCache)) {
-          $record->is_unique = 1;
-          $bylineCache[] = $row['byline'];
-        }
+      // Check and set parent based on byline (cache)
+      $record->parent = null;
+      if(isset($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
+        $record->parent = $bylineCache[$row['byline']];
       }
 
       // Set all other fields
@@ -73,6 +70,10 @@ class CRM_BlendleImport_Import_CSVReader {
       }
 
       $record->save();
+
+      if($record->parent == null) {
+        $bylineCache[$row['byline']] = $record->id;
+      }
       unset($record);
     }
 

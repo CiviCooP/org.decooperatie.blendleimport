@@ -32,7 +32,7 @@ function civicrm_api3_blendle_import_job_matchcheck($params) {
  * @param array $spec
  * @return array
  */
-function civicrm_api3_blendle_import_job_matchcheck_spec(&$spec) {
+function _civicrm_api3_blendle_import_job_matchcheck_spec(&$spec) {
   $spec = CRM_BlendleImport_BAO_ImportJob::fields();
   $spec['id']['api.required'] = TRUE;
 }
