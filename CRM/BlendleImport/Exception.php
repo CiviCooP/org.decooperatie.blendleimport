@@ -8,6 +8,4 @@
  * @package org.decooperatie.blendleimport
  * @license AGPL-3.0
  */
-class CRM_BlendleImport_Exception extends CRM_Exception {
-
-}
+class CRM_BlendleImport_Exception extends CRM_Exception { }

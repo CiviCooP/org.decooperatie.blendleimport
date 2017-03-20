@@ -32,7 +32,7 @@ class CRM_BlendleImport_Utils {
         throw new CRM_BlendleImport_Exception('Cannot load JSON config items: directory not found.');
       }
 
-      if(!class_exists('CRM_Civiconfig_Loader')) {
+      if (!class_exists('CRM_Civiconfig_Loader')) {
         throw new CRM_BlendleImport_Exception('Could not load JSON config items: module org.civicoop.configitems is not enabled!');
       }
 
@@ -48,6 +48,22 @@ class CRM_BlendleImport_Utils {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Add menu item for this extension.
+   * @param array $menu Menu
+   */
+  public static function addMenuItem(&$menu) {
+    _blendleimport_civix_insert_navigation_menu($menu, 'Contacts', [
+      'label'      => ts('Blendle Import'),
+      'name'       => 'blendleimport',
+      'url'        => 'civicrm/blendleimport',
+      'permission' => 'edit all contacts,import contacts',
+      'operator'   => 'AND',
+      'separator'  => 0,
+    ]);
+    _blendleimport_civix_navigationMenu($menu);
   }
 
 }

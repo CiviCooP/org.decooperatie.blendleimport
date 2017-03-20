@@ -6,6 +6,11 @@
     margin: 20px 0 15px 0;
 }
 
+#blendle-import-wizard .crm-ui-custom-buttons-top {
+    float: right;
+    margin: 0 0 10px 0;
+}
+
 #blendle-import-wizard .crm-wizard-buttons {
     display: none;
 }
@@ -31,6 +36,50 @@
 
 #blendle-import-wizard input[type=file] {
     border: 0 !important;
+}
+
+#blendle-import-wizard td.check {
+    width: 32px;
+    text-align: left;
+}
+
+#blendle-import-wizard #activity-preview-table {
+    margin: 10px 0;
+}
+
+#blendle-import-wizard #activity-preview-table th {
+    white-space: nowrap;
+}
+
+#blendle-import-wizard #activity-preview-table .no {
+    text-align: right;
+}
+
+#blendle-import-wizard #activity-preview-table label {
+    font-weight: bold;
+}
+
+#blendle-import-wizard .log-block {
+    clear: both;
+    margin: 1em 0;
+    padding: 0.5em 0.25em;
+}
+
+#blendle-import-wizard .log-block h4 {
+    margin: 0.7em 0;
+    font-size: 1.1em;
+}
+
+#blendle-import-wizard .log-output {
+    margin: 0 0 0.7em 0;
+    max-height: 300px;
+    overflow-y: scroll;
+    font-family: Consolas, "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+
+#blendle-import-wizard .log-output p {
+    margin: 0 0 0.1em 0;
 }
 
 /* CSS for CSVImportHelper based UI (wizard-step2) */

@@ -1,11 +1,18 @@
 <h2>{{ts('Match Contacts')}}</h2>
 
-<p>{{ts('Match all imported lines from the CSV file to CiviCRM contacts, then press \'Save & Continue\' at the bottom of the page to continue the import.')}}<br>
+<p>
+    {{ts('Match all imported lines from the CSV file to CiviCRM contacts, then press \'Save & Continue\' at the bottom of the page to continue the import.')}}<br>
     {{ts('First match all existing contacts, then create new contacts for the remaining entries if necessary. Author names that appear multiple times in the import file only appear once here - all records will be automatically updated.')}}
 </p>
 
 <div class="help" ng-show="job_records.length == 0">
     <p><em>{{ts('Something went wrong - no records available!')}}</em></p>
+</div>
+
+<div class="crm-ui-custom-buttons-top">
+    <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="loadThenGotoStep3()"
+            ng-show="job.id && job.status != 'new' && job.status != 'contacts'">{{ts('Skip')}}
+    </button>
 </div>
 
 <div ng-hide="job_records.length == 0">
@@ -74,9 +81,9 @@
 </div>
 
 <div class="crm-ui-custom-buttons">
-    <button crm-icon="fa-caret-right fa-lg" title="{{ts('Upload and continue')}}" ng-click="submitStep2()">{{ts('Save & Continue')}}
+    <button crm-icon="fa-caret-right fa-lg" title="{{ts('Save and Continue')}}" ng-click="submitStep2()">{{ts('Save & Continue')}}
     </button>
-    <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="skipGoto(2)"
+    <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="loadThenGotoStep3()"
             ng-show="job.id && job.status != 'new' && job.status != 'contacts'">{{ts('Skip')}}
     </button>
 </div>

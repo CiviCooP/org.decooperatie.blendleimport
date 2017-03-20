@@ -1,3 +1,91 @@
-<h2>{{ts('Import Articles')}}</h2>
+<h2>{{ts('Import Data')}}</h2>
 
-<p><strong>TODO Import Articles</strong></p>
+<p>{{ts('Check all import tasks you want to run. You can run all tasks at once; if you don\'t, you can return to this step later to run any remaining tasks.')}}</p>
+
+<div class="crm-block crm-form-block">
+    <table class="wizard-steps">
+        <tr>
+            <td class="check">
+                <input type="checkbox" id="task_activity" ng-model="tasks.activity" />
+            </td>
+            <td>
+                <label for="task_activity">{{ts('Create Activities')}}</label><br>
+                {{ taskCounts.activity_count }} activities will be created.
+                <a class="ng-link" ng-click="showPreview=!showPreview">{{ts('Toggle Preview')}}</a>
+
+                <div id="activity-preview-table" ng-show="showPreview">
+                    <table id="options" class="display">
+                        <thead>
+                        <tr>
+                            <th>{{ts('Contact ID')}}</th>
+                            <th>{{ts('Title')}}</th>
+                            <th class="no">{{ts('Sales #')}}</th>
+                            <th class="no">{{ts('Premium #')}}</th>
+                            <th class="no">{{ts('Sales €')}}</th>
+                            <th class="no">{{ts('Refunded €')}}</th>
+                            <th class="no">{{ts('Vmoney €')}}</th>
+                            <th class="no">{{ts('Revenue €')}}</th>
+                        </tr>
+                        </thead>
+                        <tr ng-repeat="(rowIndex, row) in job_records|limitTo:25" class="crm-importrecord crm-entity">
+                            <td>{{row.contact_id}}</td>
+                            <td>{{row.title|limitTo:40}}&hellip;</td>
+                            <td class="no">{{row.sales_count}}</td>
+                            <td class="no">{{row.premium_reads}}</td>
+                            <td class="no">{{row.sales_amount}}</td>
+                            <td class="no">{{row.refunded_amount}}</td>
+                            <td class="no">{{row.vmoney_amount}}</td>
+                            <td class="no">{{row.approximated_revenue_eur}}</td>
+                        </tr>
+                    </table>
+                    {{row.id}}
+                </div>
+            </td>
+        </tr>
+        <tr ng-show="job.add_tag">
+            <td class="check">
+                <input type="checkbox" id="task_tag" ng-model="tasks.tag"/>
+            </td>
+            <td>
+                <label for="task_tag">{{ts('Add tags')}}</label><br>
+                {{ taskCounts.tag_count }} tags will be added.
+            </td>
+        </tr>
+        <tr ng-show="job.add_membership_type">
+            <td class="check">
+                <input type="checkbox" id="task_membership" ng-model="tasks.membership"/>
+            </td>
+            <td>
+                <label for="task_membership">{{ts('Create memberships')}}</label><br>
+                {{ taskCounts.membership_count }} memberships will be created.
+            </td>
+        </tr>
+        <tr>
+            <td class="check">
+                <input type="checkbox" id="tasks_payment" ng-model="tasks.payment" />
+            </td>
+            <td>
+                <label for="tasks_payment">{{ts('Generate Payments')}}</label><br>
+                Up to {{ taskCounts.payment_count }} contributions will be created.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="crm-ui-custom-buttons">
+    <button crm-icon="fa-caret-right fa-lg" title="{{ts('Run Import')}}" ng-click="submitStep3()">{{ts('Run Import')}}
+    </button>
+    <button crm-icon="fa-check fa-lg" title="{{ts('Exit Wizard')}}" ng-click="leave()" ng-show="logOutput.length > 0">{{ts('Exit')}}</button>
+</div>
+
+<div class="crm-block crm-form-block log-block" ng-show="logOutput.length > 0">
+    <h4>Log Output</h4>
+    <p>{{ ts('Please keep this window open and check the output below for errors. Once the import is complete, search for activities and contributions to check the imported data.') }}</p>
+    <div class="log-output">
+        <p class="log-line" ng-repeat="(lIndex, line) in logOutput">
+            <span class="date" ng-show="line.date != null">[{{ line.date }}]</span>
+            <span class="priority" ng-show="line.priority != null">({{ line.priority }}) </span>
+            <span class="message">{{ line.message }}</span>
+        </p>
+    </div>
+</div>

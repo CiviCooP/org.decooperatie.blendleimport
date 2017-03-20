@@ -18,7 +18,7 @@ class CRM_BlendleImport_Import_CSVReader {
    * @param int $job_id Job ID
    */
   public function __construct($job_id) {
-      $this->job_id = $job_id;
+    $this->job_id = $job_id;
   }
 
   /**
@@ -51,34 +51,34 @@ class CRM_BlendleImport_Import_CSVReader {
     $bylineCache = [];
 
     // Walk through CSV and store all rows
-    foreach($rows as $row) {
+    foreach ($rows as $row) {
 
       $record = new CRM_BlendleImport_BAO_ImportRecord;
       $record->job_id = $this->job_id;
 
       // Check and set parent based on byline (cache)
-      $record->parent = null;
-      if(isset($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
+      $record->parent = NULL;
+      if (isset($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
         $record->parent = $bylineCache[$row['byline']];
       }
 
       // Set all other fields
-      foreach($row as $fieldName => $value) {
-        if(in_array($fieldName, $validFields)) {
+      foreach ($row as $fieldName => $value) {
+        if (in_array($fieldName, $validFields)) {
           $record->$fieldName = $value;
         }
       }
 
       $record->save();
 
-      if($record->parent == null) {
+      if ($record->parent == NULL) {
         $bylineCache[$row['byline']] = $record->id;
       }
       unset($record);
     }
 
     // Done!
-    return true;
+    return TRUE;
   }
 
   /**
@@ -97,7 +97,7 @@ class CRM_BlendleImport_Import_CSVReader {
     $header_row = array_shift($csv_rows);
 
     // Create array with header row fields as keys
-    array_walk($csv_rows, function(&$row, $key, $header) {
+    array_walk($csv_rows, function (&$row, $key, $header) {
       $row = array_combine($header, $row);
     }, $header_row);
 

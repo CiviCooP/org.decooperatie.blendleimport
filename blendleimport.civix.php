@@ -21,9 +21,8 @@ function _blendleimport_civix_civicrm_config(&$config = NULL) {
 
   if (is_array($template->template_dir)) {
     array_unshift($template->template_dir, $extDir);
-  }
-  else {
-    $template->template_dir = array($extDir, $template->template_dir);
+  } else {
+    $template->template_dir = [$extDir, $template->template_dir];
   }
 
   $include_path = $extRoot . PATH_SEPARATOR . get_include_path();
@@ -63,7 +62,7 @@ function _blendleimport_civix_civicrm_install() {
 function _blendleimport_civix_civicrm_postInstall() {
   _blendleimport_civix_civicrm_config();
   if ($upgrader = _blendleimport_civix_upgrader()) {
-    if (is_callable(array($upgrader, 'onPostInstall'))) {
+    if (is_callable([$upgrader, 'onPostInstall'])) {
       $upgrader->onPostInstall();
     }
   }
@@ -89,7 +88,7 @@ function _blendleimport_civix_civicrm_uninstall() {
 function _blendleimport_civix_civicrm_enable() {
   _blendleimport_civix_civicrm_config();
   if ($upgrader = _blendleimport_civix_upgrader()) {
-    if (is_callable(array($upgrader, 'onEnable'))) {
+    if (is_callable([$upgrader, 'onEnable'])) {
       $upgrader->onEnable();
     }
   }
@@ -104,7 +103,7 @@ function _blendleimport_civix_civicrm_enable() {
 function _blendleimport_civix_civicrm_disable() {
   _blendleimport_civix_civicrm_config();
   if ($upgrader = _blendleimport_civix_upgrader()) {
-    if (is_callable(array($upgrader, 'onDisable'))) {
+    if (is_callable([$upgrader, 'onDisable'])) {
       $upgrader->onDisable();
     }
   }
@@ -133,8 +132,7 @@ function _blendleimport_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL
 function _blendleimport_civix_upgrader() {
   if (!file_exists(__DIR__ . '/CRM/BlendleImport/Upgrader.php')) {
     return NULL;
-  }
-  else {
+  } else {
     return CRM_BlendleImport_Upgrader_Base::instance();
   }
 }
@@ -150,12 +148,12 @@ function _blendleimport_civix_upgrader() {
  * @return array(string)
  */
 function _blendleimport_civix_find_files($dir, $pattern) {
-  if (is_callable(array('CRM_Utils_File', 'findFiles'))) {
+  if (is_callable(['CRM_Utils_File', 'findFiles'])) {
     return CRM_Utils_File::findFiles($dir, $pattern);
   }
 
-  $todos = array($dir);
-  $result = array();
+  $todos = [$dir];
+  $result = [];
   while (!empty($todos)) {
     $subdir = array_shift($todos);
     foreach (_blendleimport_civix_glob("$subdir/$pattern") as $match) {
@@ -167,8 +165,7 @@ function _blendleimport_civix_find_files($dir, $pattern) {
       while (FALSE !== ($entry = readdir($dh))) {
         $path = $subdir . DIRECTORY_SEPARATOR . $entry;
         if ($entry{0} == '.') {
-        }
-        elseif (is_dir($path)) {
+        } elseif (is_dir($path)) {
           $todos[] = $path;
         }
       }
@@ -177,6 +174,7 @@ function _blendleimport_civix_find_files($dir, $pattern) {
   }
   return $result;
 }
+
 /**
  * (Delegated) Implements hook_civicrm_managed().
  *
@@ -221,11 +219,11 @@ function _blendleimport_civix_civicrm_caseTypes(&$caseTypes) {
       CRM_Core_Error::fatal($errorMessage);
       // throw new CRM_Core_Exception($errorMessage);
     }
-    $caseTypes[$name] = array(
+    $caseTypes[$name] = [
       'module' => 'org.decooperatie.blendleimport',
-      'name' => $name,
-      'file' => $file,
-    );
+      'name'   => $name,
+      'file'   => $file,
+    ];
   }
 }
 
@@ -268,7 +266,7 @@ function _blendleimport_civix_civicrm_angularModules(&$angularModules) {
  */
 function _blendleimport_civix_glob($pattern) {
   $result = glob($pattern);
-  return is_array($result) ? $result : array();
+  return is_array($result) ? $result : [];
 }
 
 /**
@@ -281,15 +279,14 @@ function _blendleimport_civix_glob($pattern) {
 function _blendleimport_civix_insert_navigation_menu(&$menu, $path, $item) {
   // If we are done going down the path, insert menu
   if (empty($path)) {
-    $menu[] = array(
-      'attributes' => array_merge(array(
-        'label'      => CRM_Utils_Array::value('name', $item),
-        'active'     => 1,
-      ), $item),
-    );
+    $menu[] = [
+      'attributes' => array_merge([
+        'label'  => CRM_Utils_Array::value('name', $item),
+        'active' => 1,
+      ], $item),
+    ];
     return TRUE;
-  }
-  else {
+  } else {
     // Find an recurse into the next level down
     $found = FALSE;
     $path = explode('/', $path);
@@ -297,7 +294,7 @@ function _blendleimport_civix_insert_navigation_menu(&$menu, $path, $item) {
     foreach ($menu as $key => &$entry) {
       if ($entry['attributes']['name'] == $first) {
         if (!isset($entry['child'])) {
-          $entry['child'] = array();
+          $entry['child'] = [];
         }
         $found = _blendleimport_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item, $key);
       }
@@ -310,7 +307,7 @@ function _blendleimport_civix_insert_navigation_menu(&$menu, $path, $item) {
  * (Delegated) Implements hook_civicrm_navigationMenu().
  */
 function _blendleimport_civix_navigationMenu(&$nodes) {
-  if (!is_callable(array('CRM_Core_BAO_Navigation', 'fixNavigationMenu'))) {
+  if (!is_callable(['CRM_Core_BAO_Navigation', 'fixNavigationMenu'])) {
     _blendleimport_civix_fixNavigationMenu($nodes);
   }
 }
@@ -321,7 +318,7 @@ function _blendleimport_civix_navigationMenu(&$nodes) {
  */
 function _blendleimport_civix_fixNavigationMenu(&$nodes) {
   $maxNavID = 1;
-  array_walk_recursive($nodes, function($item, $key) use (&$maxNavID) {
+  array_walk_recursive($nodes, function ($item, $key) use (&$maxNavID) {
     if ($key === 'navID') {
       $maxNavID = max($maxNavID, $item);
     }
@@ -337,7 +334,7 @@ function _blendleimport_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $paren
     }
     // If no navID, then assign navID and fix key.
     if (!isset($nodes[$origKey]['attributes']['navID'])) {
-      $newKey = ++$maxNavID;
+      $newKey = ++ $maxNavID;
       $nodes[$origKey]['attributes']['navID'] = $newKey;
       $nodes[$newKey] = $nodes[$origKey];
       unset($nodes[$origKey]);

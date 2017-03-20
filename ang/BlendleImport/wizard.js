@@ -25,22 +25,25 @@
         // -- Initialisation -- //
 
         var ts = $scope.ts = CRM.ts('org.decooperatie.blendleimport');
+
         $scope.job = job;
         $scope.job_records = [];
         $scope.csv_upload = null;
+
+        $scope.tasks = {};
+        $scope.taskCounts = {};
+        $scope.logOutput = [];
+
+        $scope.includeTemplateNames = {
+            0: '~/BlendleImport/wizard-step1.html',
+            1: '~/BlendleImport/wizard-step2.html',
+            2: '~/BlendleImport/wizard-step3.html'
+        };
 
         var queryParams = $location.search();
         if (queryParams.action == 'update' && !$scope.job) {
             crmUiAlert({'text': ts('An error occurred loading the import job.'), 'title': ts('Blendle Import Error')});
         }
-
-        $scope.includeTemplateNames = {
-            0: '~/BlendleImport/wizard-step1.html',
-            1: '~/BlendleImport/wizard-step2.html',
-            2: '~/BlendleImport/wizard-step3.html',
-            3: '~/BlendleImport/wizard-step4.html',
-            4: '~/BlendleImport/wizard-step5.html'
-        };
 
         // -- Step submit functions -- //
 
@@ -85,11 +88,30 @@
             });
         };
 
+        // Submit step 3 (import data)
+        $scope.submitStep3 = function () {
+            $scope.logOutput = [{'message':'Running import, please wait...'}];
+            var qchain = $q.when(); // We need to queue all import tasks in order!
+
+            _.each($scope.tasks, function(enabled, taskName) {
+                if(enabled == true) {
+                    qchain.then(function() {
+                            return importJobsMgr.runImport($scope.job.id, taskName).then(function (result) {
+                                $scope.updateLogOutput(result);
+                            });
+                        });
+                }
+            });
+
+            // crmStatus({start: ts('Importing data...'), success: ts('Import complete')}, qchain);
+        };
+
         // -- Step loading functions -- //
 
         // Load data needed for the next step's view. This would usually happen in
         // a separate controller, but I think that isn't supported in combination with crmUiWizard
         $scope.loadThenGotoStep2 = function () {
+            // Load records = contacts to match
             crmStatus({start: ts('Loading data...'), success: ts('Loading complete')},
                 importJobsMgr.getRecords($scope.job.id).then(function (result) {
                     $scope.job_records = result;
@@ -98,9 +120,21 @@
         };
 
         $scope.loadThenGotoStep3 = function () {
-            crmUiAlert({'text': ts('TODO Load data and show step 3'), 'type': 'success', 'options': {'expires': 1500}});
-            $scope.uiWizardCtrl.goto(2);
-        }
+            // Preset tasks to run
+            $scope.tasks = {
+                'activity': (['tagsmemb', 'payments', 'complete'].indexOf($scope.job.status) == -1),
+                'tag': (['payments', 'complete'].indexOf($scope.job.status) == -1 && ($scope.job.add_tag != null)),
+                'membership': (['payments', 'complete'].indexOf($scope.job.status) == -1 && ($scope.job.add_membership_type != null)),
+                'payment': ($scope.job.status != 'complete')
+            };
+
+            // Get import counts, then show step UI
+            crmStatus({start: ts('Loading data...'), success: ts('Loading complete')},
+                importJobsMgr.getImportCount($scope.job.id).then(function (result) {
+                    $scope.taskCounts = result;
+                    $scope.uiWizardCtrl.goto(2);
+                }));
+        };
 
         // -- Wizard UI functions -- //
 
@@ -116,7 +150,7 @@
 
         // Open new window/tab with contact data
         $scope.viewContact = function (cid) {
-            var url = CRM.url('civicrm/contact/view', { cid: cid, reset: 1 });
+            var url = CRM.url('civicrm/contact/view', {cid: cid, reset: 1});
             window.open(url);
         };
 
@@ -128,6 +162,18 @@
                 'type': 'alert',
                 'options': {'expires': 1500}
             });
+        };
+
+        // Update / append log output
+        $scope.updateLogOutput = function (data) {
+            if(data.is_error) {
+                $scope.logOutput.push({'message': 'ERROR (API): ' + data.error_message});
+            } else {
+                _.each(data.values, function (line, index) {
+                    $scope.logOutput.push(line);
+                });
+            }
+            $('.log-output').animate({scrollTop: $('.log-output').eq(0).scrollHeight}, 250);
         };
 
         // -- Contact matching functions -- //
@@ -180,7 +226,6 @@
         };
 
         $scope.recheckRecords = function () {
-            // e.g. after you've tweaked some data in CiviCRM.
             crmStatus({start: ts('Re-scanning...'), success: ts('Finished')},
                 importJobsMgr.matchRecords($scope.job.id)
             ).then(function (result) {
@@ -203,7 +248,6 @@
         };
 
         $scope.createContacts = function () {
-
             crmStatus({start: ts('Creating new contacts...'), success: ts('Finished')},
                 importJobsMgr.createContacts($scope.job.id)
             ).then(function (result) {

@@ -37,10 +37,8 @@
                         <td class="crm-importjob-created">{$row->created_date|crmDate:'%d-%m-%Y'}</td>
                         <td class="crm-importjob-status">{$row->getStatusDescription()}</td>
                         <td class="crm-importjob-actions">
-                            {if $row->status != 'complete'}
-                                <a class="action-item" title="{ts}Continue{/ts}"
-                                   href="{crmURL p="civicrm/a/#blendleimport?action=update&id=`$row->id`" }">{ts}Continue{/ts}</a>
-                            {/if}
+                            <a class="action-item crm-hover-button" title="{ts}Continue{/ts}" href="{crmURL p="civicrm/a/#blendleimport?action=update&id=`$row->id`" }">{ts}Continue{/ts}</a>
+                            <a href="#" class="action-item crm-hover-button crm-importjob-delete" title="{ts}Delete{/ts}" data-delete-url="{crmURL p="civicrm/blendleimport/delete?id=`$row->id`"}" >{ts}Delete{/ts}</a>
                         </td>
                     </tr>
                 {/foreach}
@@ -49,3 +47,21 @@
     </div>
 
 </div>
+
+{literal}
+<script type="text/javascript">
+    jQuery(function($) {
+        $('.crm-importjob-delete').click(function(ev) {
+            ev.preventDefault();
+            var that = $(this);
+
+            CRM.confirm({
+                    title: ts('Confirm delete'),
+                    message: ts('Are you sure you want to delete this import job? (This will NOT delete imported activities and payments. You will no longer be able to resume this import job or to use its data in new mailings.)')
+                }).on('crmConfirm:yes', function() {
+                    location.href = that.attr('data-delete-url');
+                });
+        });
+    });
+</script>
+{/literal}

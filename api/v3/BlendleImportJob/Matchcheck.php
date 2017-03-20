@@ -20,9 +20,9 @@ function civicrm_api3_blendle_import_job_matchcheck($params) {
   $jobs = CRM_BlendleImport_BAO_ImportJob::getJobs($params);
   $returnValue = TRUE;
 
-  foreach($jobs as $job) {
-    if(!$job->checkMatchStatus()) {
-      $returnValue = false;
+  foreach ($jobs as $job) {
+    if (!$job->checkMatchStatus()) {
+      $returnValue = FALSE;
     }
   }
   return civicrm_api3_create_success($returnValue, $params, 'BlendleImportJob', 'Matchcheck');

@@ -1,7 +1,7 @@
 <div class="crm-container" id="blendle-import-wizard">
 
     <div class="crm-back-button">
-        <button crm-icon="fa-angle-left" ng-click="leave()">{{ts('Exit Wizard')}}</button>
+        <button crm-icon="fa-sign-out" ng-click="leave()">{{ts('Exit Wizard')}}</button>
     </div>
 
     <div class="crm-title">
@@ -20,17 +20,11 @@
                 <div ng-include="includeTemplateNames[1]"></div>
             </div>
 
-            <div crm-ui-wizard-step crm-title="ts('Import Articles')" ng-form="activitiesForm">
+            <div crm-ui-wizard-step crm-title="ts('Import Data')" ng-form="activitiesForm">
                 <div ng-include="includeTemplateNames[2]"></div>
             </div>
 
-            <div crm-ui-wizard-step crm-title="ts('Generate Payments')" ng-form="contributionsForm">
-                <div ng-include="includeTemplateNames[3]"></div>
-            </div>
-
-            <div crm-ui-wizard-step crm-title="ts('Done!')" ng-form="completeForm">
-                <div ng-include="includeTemplateNames[4]"></div>
-            </div>
+            <div crm-ui-wizard-step crm-title="ts('Done!')" ng-form="completeForm"></div>
 
             <div class="clear"></div>
 

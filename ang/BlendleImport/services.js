@@ -28,8 +28,10 @@
             },
 
             getRecords: function getRecords(jobId) {
-                // Get all BlendleImportRecords for a job ID
-                return qApi('BlendleImportRecord', 'get', {job_id: jobId, sequential: 1}).then(function (apiResult) {
+                // Get all unique BlendleImportRecords for a job ID
+                return qApi('BlendleImportRecord', 'get',
+                    {job_id: jobId, parent: {'IS NULL': true}, sequential: 1})
+                .then(function (apiResult) {
                     if (!apiResult || apiResult.is_error || !apiResult.values) {
                         return false;
                     }
@@ -70,6 +72,23 @@
                     if (!apiResult || apiResult.is_error) {
                         return false;
                     }
+                    return apiResult;
+                });
+            },
+
+            getImportCount: function getImportcount(jobId) {
+                // Get counts to show what data will be imported / added
+                return qApi('BlendleImportJob', 'importcount', {id: jobId}).then(function (apiResult) {
+                   if(!apiResult || apiResult.is_error) {
+                       return false;
+                   }
+                   return apiResult.values;
+                });
+            },
+
+            runImport: function runImport(jobId, task) {
+                // Run an actual import task!
+                return qApi('BlendleImportJob', 'import', {id: jobId, task: task}).then(function (apiResult) {
                     return apiResult;
                 });
             }

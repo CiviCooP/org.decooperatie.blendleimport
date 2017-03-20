@@ -11,7 +11,7 @@
 class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
 
   /**
-   * Fetch an array of Import Job objects.
+   * Fetch an array of import jobs.
    * @param array $params Input parameters to find object(s).
    * @param bool $asArray Whether to return an array of arrays instead of objects.
    * @return static[]|null The found object(s) or null
@@ -21,8 +21,8 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
     $instance = new static;
 
     // Quick hack: not sure how to best support IS NULL, added manually this way
-    foreach($params as $paramName => &$param) {
-      if(is_array($param) && isset($param['IS NULL'])) {
+    foreach ($params as $paramName => &$param) {
+      if (is_array($param) && isset($param['IS NULL'])) {
         $instance->whereAdd(CRM_Utils_Type::escape($paramName, 'String') . ' IS NULL');
         unset($params[$paramName]);
       }
@@ -42,6 +42,18 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
     }
 
     return $result;
+  }
+
+  /**
+   * Get a single import job by ID.
+   * @param int $jobId Job ID
+   * @return static|null The found object or null
+   */
+  public static function getJobById($jobId) {
+    $instance = new static;
+    $instance->id = $jobId;
+    $instance->find(TRUE);
+    return $instance;
   }
 
   /**
@@ -77,7 +89,7 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
     CRM_Utils_Hook::post($hook, get_class($instance), $instance->id, $instance);
 
     // What is the best way to reload + return object?
-    if($returnObject) {
+    if ($returnObject) {
       return $instance->findById($instance->id);
     } else {
       return $instance;
@@ -90,7 +102,7 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
    * @throws CRM_BlendleImport_Exception If status ID is invalid
    */
   public function setStatus($status_id) {
-    if (!in_array($status_id, [self::STATUS_NEW, self::STATUS_CONTACTS, self::STATUS_ACTIVITIES, self::STATUS_CONTRIBUTIONS, self::STATUS_COMPLETE])) {
+    if (!in_array($status_id, [self::STATUS_NEW, self::STATUS_CONTACTS, self::STATUS_ACTIVITIES, self::STATUS_TAGSMEMB, self::STATUS_PAYMENTS, self::STATUS_COMPLETE])) {
       throw new CRM_BlendleImport_Exception('Invalid value for civicrm_blendleimport_job.status: ' . $status_id . '.');
     }
 
@@ -118,9 +130,12 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
         return ts('Match Contacts');
         break;
       case self::STATUS_ACTIVITIES:
-        return ts('Import Articles');
+        return ts('Create Activities');
         break;
-      case self::STATUS_CONTRIBUTIONS:
+      case self::STATUS_TAGSMEMB:
+        return ts('Create Tags/Memberships');
+        break;
+      case self::STATUS_PAYMENTS:
         return ts('Generate Payments');
         break;
       case self::STATUS_COMPLETE:
@@ -146,11 +161,16 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
 
   /**
    * Get records for this import job.
+   * @param bool $unique Return unique contacts?
    * @param bool $asArray Return an array instead of objects?
    * @return array Import Records
    */
-  public function getRecords($asArray = FALSE) {
-    return CRM_BlendleImport_BAO_ImportRecord::getRecords(['job_id' => $this->id], $asArray);
+  public function getRecords($unique = FALSE, $asArray = FALSE) {
+    $params = ['job_id' => $this->id];
+    if ($unique) {
+      $params['parent'] = ['IS NULL' => TRUE];
+    }
+    return CRM_BlendleImport_BAO_ImportRecord::getRecords($params, $asArray);
   }
 
   /**
@@ -167,17 +187,16 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
    * @return int Number of records matched
    */
   public function matchRecords($rematchAll = FALSE) {
-
     $params = ['job_id' => $this->id];
-    if(!$rematchAll) {
+    if (!$rematchAll) {
       $params['parent'] = ['IS NULL' => TRUE];
       $params['contact_id'] = ['IS NULL' => TRUE];
     }
 
-    $records = CRM_BlendleImport_BAO_ImportRecord::getRecords($params);
+    $records = $this->getRecords(TRUE);
     $mf = CRM_BlendleImport_Import_MatchFinder::instance();
 
-    foreach($records as &$record) {
+    foreach ($records as &$record) {
       $mf->match($record);
     }
 
@@ -189,13 +208,12 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
    * @return bool All records matched?
    */
   public function checkMatchStatus() {
-
     $count = CRM_BlendleImport_BAO_ImportRecord::getRecordCount([
-      'job_id' => $this->id,
+      'job_id'     => $this->id,
       'contact_id' => ['IS NULL' => TRUE],
     ]);
 
-    if($count == 0 && $this->status == static::STATUS_CONTACTS) {
+    if ($count == 0 && $this->status == static::STATUS_CONTACTS) {
       $this->setStatus(static::STATUS_ACTIVITIES);
       $this->save();
     }
@@ -208,17 +226,17 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
    * @return int Number of contacts created
    */
   public function createContacts() {
-
     $records = CRM_BlendleImport_BAO_ImportRecord::getRecords([
-      'job_id' => $this->id,
+      'job_id'     => $this->id,
       'contact_id' => ['IS NULL' => TRUE],
-      'state' => 'impossible',
+      'parent'     => ['IS NULL' => TRUE],
+      'state'      => 'impossible',
     ]);
     $createdCache = [];
 
-    foreach($records as &$record) {
+    foreach ($records as &$record) {
 
-      if(array_key_exists($record->byline, $createdCache)) {
+      if (array_key_exists($record->byline, $createdCache)) {
 
         // Contact already created, use id from cache
         $record->contact_id = $createdCache[$record->byline];
@@ -235,7 +253,7 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
           'first_name'   => $names['first'],
           'last_name'    => $names['last'],
         ]);
-        if(empty($contact['id'])) {
+        if (empty($contact['id'])) {
           continue;
         }
 

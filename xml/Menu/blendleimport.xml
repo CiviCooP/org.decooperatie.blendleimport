@@ -7,9 +7,9 @@
     <access_arguments>edit all contacts, import contacts</access_arguments>
   </item>
   <item>
-    <path>civicrm/blendleimport/import</path>
-    <page_callback>CRM_BlendleImport_Form_Import</page_callback>
-    <title>Run Import</title>
+    <path>civicrm/blendleimport/delete</path>
+    <page_callback>CRM_BlendleImport_Page_JobDelete</page_callback>
+    <title>Delete Import Job</title>
     <access_arguments>edit all contacts, import contacts</access_arguments>
   </item>
 </menu>

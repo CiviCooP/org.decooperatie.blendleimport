@@ -3,22 +3,22 @@
 // in CiviCRM. See also:
 // http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_angularModules
 
-return array (
-  'js' => 
-  array (
-    0 => 'ang/BlendleImport.js',
-    1 => 'ang/BlendleImport/*.js',
-    2 => 'ang/BlendleImport/*/*.js',
-  ),
-  'css' => 
-  array (
-    0 => 'ang/BlendleImport.css',
-  ),
-  'partials' => 
-  array (
-    0 => 'ang/BlendleImport',
-  ),
-  'settings' => 
-  array (
-  ),
-);
+return [
+  'js'       =>
+    [
+      0 => 'ang/BlendleImport.js',
+      1 => 'ang/BlendleImport/*.js',
+      2 => 'ang/BlendleImport/*/*.js',
+    ],
+  'css'      =>
+    [
+      0 => 'ang/BlendleImport.css',
+    ],
+  'partials' =>
+    [
+      0 => 'ang/BlendleImport',
+    ],
+  'settings' =>
+    [
+    ],
+];

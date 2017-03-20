@@ -75,7 +75,7 @@
     </table>
 
     <div class="crm-ui-custom-buttons">
-        <button crm-icon="fa-caret-right fa-lg" title="{{ts('Upload and continue')}}" ng-click="submitStep1()">{{ts('Save & Continue')}}</button>
+        <button crm-icon="fa-caret-right fa-lg" title="{{ts('Save and Continue')}}" ng-click="submitStep1()">{{ts('Save & Continue')}}</button>
         <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="loadThenGotoStep2()"
                 ng-show="job.id && job.status != 'new'">{{ts('Skip')}}</button>
     </div>

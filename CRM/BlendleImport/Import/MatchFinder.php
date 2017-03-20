@@ -19,8 +19,8 @@ class CRM_BlendleImport_Import_MatchFinder {
   /**
    * @return static Class instance
    */
-  static public function instance() {
-    if (! static::$instance) {
+  public static function instance() {
+    if (!static::$instance) {
       static::$instance = new static;
     }
     return self::$instance;
@@ -100,7 +100,7 @@ class CRM_BlendleImport_Import_MatchFinder {
     }
 
     // No name at all?
-    if(empty($names)) {
+    if (empty($names)) {
       return FALSE;
     }
 

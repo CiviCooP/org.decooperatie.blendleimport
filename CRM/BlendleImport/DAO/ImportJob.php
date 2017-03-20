@@ -27,7 +27,8 @@ class CRM_BlendleImport_DAO_ImportJob extends CRM_Core_DAO {
   const STATUS_NEW = 'new';
   const STATUS_CONTACTS = 'contacts';
   const STATUS_ACTIVITIES = 'activities';
-  const STATUS_CONTRIBUTIONS = 'contributions';
+  const STATUS_TAGSMEMB = 'tagsmemb';
+  const STATUS_PAYMENTS = 'payments';
   const STATUS_COMPLETE = 'complete';
 
   /**
@@ -70,47 +71,47 @@ class CRM_BlendleImport_DAO_ImportJob extends CRM_Core_DAO {
           'type'      => CRM_Utils_Type::T_STRING,
           'maxlength' => 100,
           'title'     => ts('Publication Name'),
-          'default' => 'NULL',
+          'default'   => 'NULL',
         ],
         'import_date'         => [
           'name'        => 'import_date',
           'type'        => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
           'title'       => ts('Import Date'),
           'dataPattern' => '/^\d{4}-?\d{2}-?\d{2} ?(\d{2}:?\d{2}:?(\d{2})?)?$/',
-          'default' => 'NULL',
+          'default'     => 'NULL',
         ],
         'add_tag'             => [
           'name'        => 'add_tag',
           'type'        => CRM_Utils_Type::T_INT,
           'title'       => ts('Add Tag (ID)'),
           'FKClassName' => 'CRM_Core_DAO_Tag',
-          'default' => 'NULL',
+          'default'     => 'NULL',
         ],
         'add_membership_type' => [
           'name'        => 'add_membership_type',
           'type'        => CRM_Utils_Type::T_INT,
           'title'       => ts('Create Membership (Type ID)'),
           'FKClassName' => 'CRM_Member_DAO_MembershipType',
-          'default' => 'NULL',
+          'default'     => 'NULL',
         ],
         'status'              => [
-          'name'  => 'status',
-          'type'  => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Status'),
+          'name'    => 'status',
+          'type'    => CRM_Utils_Type::T_STRING,
+          'title'   => ts('Job Status'),
           'default' => 'NULL',
         ],
         'created_date'        => [
-          'name'  => 'created_date',
-          'type'  => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-          'title' => ts('Created Date'),
+          'name'    => 'created_date',
+          'type'    => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'title'   => ts('Created Date'),
           'default' => 'NULL',
         ],
         'created_id'          => [
-          'name'  => 'created_id',
-          'type'  => CRM_Utils_Type::T_INT,
-          'title' => ts('Created By'),
+          'name'        => 'created_id',
+          'type'        => CRM_Utils_Type::T_INT,
+          'title'       => ts('Created By'),
           'FKClassName' => 'CRM_Contact_DAO_Contact',
-          'default' => 'NULL',
+          'default'     => 'NULL',
         ],
       ];
     }

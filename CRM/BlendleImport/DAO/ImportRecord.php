@@ -58,10 +58,10 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'required' => TRUE,
         ],
         'job_id'                        => [
-          'name'     => 'job_id',
-          'type'     => CRM_Utils_Type::T_INT,
-          'title'    => ts('Import Job ID'),
-          'required' => TRUE,
+          'name'        => 'job_id',
+          'type'        => CRM_Utils_Type::T_INT,
+          'title'       => ts('Import Job ID'),
+          'required'    => TRUE,
           'FKClassName' => 'CRM_BlendleImport_DAO_ImportJob',
         ],
         'product_uid'                   => [
@@ -71,11 +71,11 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'title'     => ts('Product UID'),
         ],
         'contact_id'                    => [
-          'name'  => 'contact_id',
-          'type'  => CRM_Utils_Type::T_INT,
-          'title' => ts('Contact ID'),
+          'name'        => 'contact_id',
+          'type'        => CRM_Utils_Type::T_INT,
+          'title'       => ts('Contact ID'),
           'FKClassName' => 'CRM_Contact_DAO_Contact',
-          'default' => 'NULL',
+          'default'     => 'NULL',
         ],
         'title'                         => [
           'name'      => 'title',
@@ -139,11 +139,11 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'type'  => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Price'),
         ],
-        'parent'                         => [
-          'name'      => 'parent',
-          'type'      => CRM_Utils_Type::T_INT,
-          'title'     => ts('Parent Record ID'),
-          'default' => NULL,
+        'parent'                        => [
+          'name'        => 'parent',
+          'type'        => CRM_Utils_Type::T_INT,
+          'title'       => ts('Parent Record ID'),
+          'default'     => NULL,
           'FKClassName' => 'CRM_BlendleImport_DAO_ImportRecord',
         ],
         'state'                         => [
@@ -151,14 +151,14 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'type'      => CRM_Utils_Type::T_STRING,
           'maxlength' => 12,
           'title'     => ts('Contact Matching State'),
-          'default' => 'NULL',
+          'default'   => 'NULL',
         ],
         'resolution'                    => [
           'name'      => 'resolution',
           'type'      => CRM_Utils_Type::T_STRING,
           'maxlength' => 4096,
           'title'     => ts('Contact Matching Resolution'),
-          'default' => 'NULL',
+          'default'   => 'NULL',
         ],
       ];
     }

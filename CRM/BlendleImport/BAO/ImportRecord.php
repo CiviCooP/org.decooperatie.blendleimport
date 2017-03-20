@@ -20,14 +20,9 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     $result = [];
     $instance = new static;
 
-    // Parent defaults to null (meaning each unique author will only be returned once)
-    if(!isset($params['parent'])) {
-      $params['parent'] = ['IS NULL' => TRUE];
-    }
-
     // Quick hack: not sure how to best support IS NULL, added manually this way
-    foreach($params as $paramName => $param) {
-      if(is_array($param) && isset($param['IS NULL'])) {
+    foreach ($params as $paramName => $param) {
+      if (is_array($param) && isset($param['IS NULL'])) {
         $instance->whereAdd(CRM_Utils_Type::escape($paramName, 'String') . ' IS NULL');
         unset($params[$paramName]);
       }
@@ -70,8 +65,8 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
    */
   public static function clearRecordsForJob($job_id) {
     $record = new static;
-    $record->whereAdd('job_id = ' . (int)$job_id);
-    return $record->delete(true);
+    $record->whereAdd('job_id = ' . (int) $job_id);
+    return $record->delete(TRUE);
   }
 
   /**
@@ -91,10 +86,10 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     if (isset($params['id']) && $params['id'] < 1) {
       throw new CRM_BlendleImport_Exception('Invalid value for id: ' . $params['id'] . '.');
     }
-    if (isset($params['state']) && !in_array($params['state'], [ 'chosen', 'multiple', 'impossible' ])) {
+    if (isset($params['state']) && !in_array($params['state'], ['chosen', 'multiple', 'impossible'])) {
       throw new CRM_BlendleImport_Exception('Invalid value for state: ' . $params['state'] . '.');
     }
-    if($params['contact_id'] == 0) {
+    if ($params['contact_id'] == 0) {
       $params['contact_id'] = NULL;
     }
 
@@ -102,7 +97,7 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     // Not currently implemented since it sort of works as-is... TODO refactor this function?
 
     // Update this row
-    if(!empty($params['resolution']) && is_array($params['resolution'])) {
+    if (!empty($params['resolution']) && is_array($params['resolution'])) {
       $params['resolution'] = serialize($params['resolution']);
     }
     $instance->copyValues($params);
@@ -139,16 +134,17 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
    * @throws CRM_BlendleImport_Exception If called for a record that hasn't been saved yet
    */
   public function updateChildren() {
-    if(empty($this->id)) {
+    if (empty($this->id)) {
       throw new CRM_BlendleImport_Exception('Could not update children: parent object has no id.');
     }
 
     $tableName = $this->getTableName();
     return CRM_Core_DAO::executeQuery("
-      UPDATE {$tableName} target
-      JOIN {$tableName} source ON target.parent = source.id
-      SET target.contact_id = source.contact_id, target.state = source.state, target.resolution = source.resolution
-      WHERE source.id = '" . CRM_Utils_Type::escape($this->id, 'Positive') . "'");
+          UPDATE {$tableName} target
+          JOIN {$tableName} source ON target.parent = source.id
+          SET target.contact_id = source.contact_id, target.state = source.state, target.resolution = source.resolution
+          WHERE source.id = '" . CRM_Utils_Type::escape($this->id, 'Positive') . "'
+        ");
   }
 
 }

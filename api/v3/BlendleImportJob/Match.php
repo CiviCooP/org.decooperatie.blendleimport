@@ -20,11 +20,11 @@ function civicrm_api3_blendle_import_job_match($params) {
   $jobs = CRM_BlendleImport_BAO_ImportJob::getJobs($params);
   $returnValues = [];
 
-  if(!isset($params['rematch_all'])) {
+  if (!isset($params['rematch_all'])) {
     $params['rematch_all'] = FALSE;
   }
 
-  foreach($jobs as $job) {
+  foreach ($jobs as $job) {
     $contactsMatched = $job->matchRecords($params['rematch_all']);
     $returnValues[] = ['job_id' => $job->id, 'contacts_matched' => $contactsMatched];
   }
@@ -39,8 +39,8 @@ function _civicrm_api3_blendle_import_job_match_spec(&$spec) {
   $spec = CRM_BlendleImport_BAO_ImportJob::fields();
   $spec['id']['api.required'] = TRUE;
   $spec['rematch_all'] = [
-    'name' => 'rematch_all',
-    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'name'  => 'rematch_all',
+    'type'  => CRM_Utils_Type::T_BOOLEAN,
     'title' => ts('Rematch all?'),
   ];
 }

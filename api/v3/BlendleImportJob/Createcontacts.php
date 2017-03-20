@@ -19,7 +19,7 @@ function civicrm_api3_blendle_import_job_createcontacts($params) {
   $jobs = CRM_BlendleImport_BAO_ImportJob::getJobs($params);
   $returnValues = [];
 
-  foreach($jobs as $job) {
+  foreach ($jobs as $job) {
     $contactsCreated = $job->createContacts();
     $returnValues[] = ['job_id' => $job->id, 'contacts_created' => $contactsCreated];
   }
