@@ -82,7 +82,7 @@
     <h4>Log Output</h4>
     <p>{{ ts('Please keep this window open and check the output below for errors. Once the import is complete, search for activities and contributions to check the imported data.') }}</p>
     <div class="log-output">
-        <p class="log-line" ng-repeat="(lIndex, line) in logOutput">
+        <p class="log-line" ng-repeat="line in logOutput track by $index">
             <span class="date" ng-show="line.date != null">[{{ line.date }}]</span>
             <span class="priority" ng-show="line.priority != null">({{ line.priority }}) </span>
             <span class="message">{{ line.message }}</span>

@@ -170,6 +170,7 @@
                 $scope.logOutput.push({'message': 'ERROR (API): ' + data.error_message});
             } else {
                 _.each(data.values, function (line, index) {
+                    // window.console.log('Log line', line);
                     $scope.logOutput.push(line);
                 });
             }
