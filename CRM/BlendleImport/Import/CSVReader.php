@@ -48,6 +48,7 @@ class CRM_BlendleImport_Import_CSVReader {
     // Clear existing data and fetch field keys
     CRM_BlendleImport_BAO_ImportRecord::clearRecordsForJob($this->job_id);
     $validFields = CRM_BlendleImport_BAO_ImportRecord::fieldKeys();
+    $numericFields = CRM_BlendleImport_BAO_ImportRecord::numericFieldKeys();
     $bylineCache = [];
 
     // Walk through CSV and store all rows
@@ -65,6 +66,10 @@ class CRM_BlendleImport_Import_CSVReader {
       // Set all other fields
       foreach ($row as $fieldName => $value) {
         if (in_array($fieldName, $validFields)) {
+          if(in_array($fieldName, $numericFields)) {
+            $value = (float) str_replace(',', '.', $value);
+          }
+
           $record->$fieldName = $value;
         }
       }
@@ -89,11 +94,16 @@ class CRM_BlendleImport_Import_CSVReader {
   protected function csvToArray($data) {
 
     // Check line endings
-    $data = str_replace('\r', '\n', str_replace('\r\n', '\n', $data));
+    $data = str_replace("\r", "\n", str_replace("\r\n", "\n", $data));
     $data = str_getcsv($data, "\n");
 
+    // Try to detect delimiter
+    $delimiter = $this->detectCsvDelimiter($data);
+
     // Parse CSV file rows
-    $csv_rows = array_map('str_getcsv', $data);
+    $csv_rows = array_map(function ($line) use ($delimiter) {
+      return str_getcsv($line, $delimiter);
+    }, $data);
     $header_row = array_shift($csv_rows);
 
     // Create array with header row fields as keys
@@ -103,6 +113,37 @@ class CRM_BlendleImport_Import_CSVReader {
 
     // Return the new array
     return $csv_rows;
+  }
+
+  /**
+   * Try to detect the delimiter for a CSV file.
+   * Borrowed from
+   * http://stackoverflow.com/questions/3395267/how-to-find-out-if-csv-file-fields-are-tab-delimited-or-comma-delimited
+   * @param array $data CSV data as array
+   * @param int $checkLines Number of lines to check
+   * @return string
+   */
+  protected function detectCsvDelimiter($data, $checkLines = 5) {
+    $delimiters = [',', '\t', ';', '|', ':'];
+    $results = [];
+    $i = 0;
+    while (count($data) > 0 && $i <= $checkLines) {
+      $line = array_shift($data);
+      foreach ($delimiters as $delimiter) {
+        $regExp = '/[' . $delimiter . ']/';
+        $fields = preg_split($regExp, $line);
+        if (count($fields) > 1) {
+          if (!empty($results[$delimiter])) {
+            $results[$delimiter] ++;
+          } else {
+            $results[$delimiter] = 1;
+          }
+        }
+      }
+      $i ++;
+    }
+    $results = array_keys($results, max($results));
+    return $results[0];
   }
 
 }

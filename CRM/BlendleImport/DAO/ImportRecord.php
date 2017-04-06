@@ -202,4 +202,20 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
     }
     return self::$_export;
   }
+
+  /**
+   * Returns an array containing all field keys of numeric fields in self::$_fields.
+   * @return array
+   */
+  public static function &numericFieldKeys() {
+    $fields = self::fields();
+    $numericFields = [];
+    foreach ($fields as $name => $field) {
+      if (in_array($field['type'], [CRM_Utils_Type::T_INT, CRM_Utils_Type::T_FLOAT])) {
+        $numericFields[] = $field['name'];
+      }
+    }
+    return $numericFields;
+  }
+
 }
