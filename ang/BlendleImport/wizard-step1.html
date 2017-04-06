@@ -17,7 +17,7 @@
                                     <span crm-icon="fa-check-circle"></span> {{ts('Data uploaded')}} ({{job.record_count}} {{ts('records')}})<br>
                                 </span>
                 <input crm-filereader ng-model="job.csv_upload" type="file" id="csv-upload" name="csv-upload" accept=".csv" />
-                <br><span class="description">{{ts('Upload a new CSV export file from Blendle here, without any modifications.')}}</span>
+                <br><span class="description">{{ts('Upload a new CSV export file from Blendle here. (Use UTF-8, keep column names intact.)')}}</span>
             </td>
         </tr>
         <tr>
@@ -69,7 +69,7 @@
             </td>
             <td><input crm-entityref="{entity:'MembershipType', select:{allowClear:true}}"
                        id="job-add-membership-type" ng-model="job.add_membership_type"/>
-                <br><span class="description">{{ts('A membership of this type will be created for all contacts in this import.')}}</span></td>
+                <br><span class="description">{{ts('A membership of this type will be created for all contacts that do not have any current membership.')}}</span></td>
             </td>
         </tr>
     </table>

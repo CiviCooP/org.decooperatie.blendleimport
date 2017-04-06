@@ -56,14 +56,15 @@ class CRM_BlendleImport_ImportTask_Membership extends CRM_BlendleImport_ImportTa
   }
 
   /**
-   * Get an array of contact ids for which the membership has not been created.
+   * Get an array of contact ids that have no current membership *at all*.
    * @return array Contact IDs
    * @throws CRM_BlendleImport_Exception On API error
    */
   protected function getContactIdsWithoutMembership() {
     $result = civicrm_api3('Membership', 'get', [
       'contact_id' => ['IN' => $this->getContactIds()],
-      'membership_type_id' => $this->job->add_membership_type,
+      // 'membership_type_id' => $this->job->add_membership_type,
+      'status_id' => ['IN' => ['New', 'Current', 'Grace']],
       'return' => 'contact_id',
       'options' => ['limit' => 0],
     ]);
@@ -73,6 +74,8 @@ class CRM_BlendleImport_ImportTask_Membership extends CRM_BlendleImport_ImportTa
 
     $alreadyHasMembership = array_column($result['values'], 'contact_id');
     $contactIds = array_diff($this->getContactIds(), $alreadyHasMembership);
+    error_log(print_r($result, true));
+    error_log(print_r($contactIds, true));
 
     return $contactIds;
   }
