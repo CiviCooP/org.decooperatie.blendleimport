@@ -74,8 +74,6 @@ class CRM_BlendleImport_ImportTask_Membership extends CRM_BlendleImport_ImportTa
 
     $alreadyHasMembership = array_column($result['values'], 'contact_id');
     $contactIds = array_diff($this->getContactIds(), $alreadyHasMembership);
-    error_log(print_r($result, true));
-    error_log(print_r($contactIds, true));
 
     return $contactIds;
   }

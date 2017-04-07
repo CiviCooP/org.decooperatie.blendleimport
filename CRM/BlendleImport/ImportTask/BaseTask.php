@@ -48,7 +48,7 @@ class CRM_BlendleImport_ImportTask_BaseTask {
       'priority' => $priority,
       'message' => $msg,
     ];
-    // error_log('ImportTask: ' . $msg);
+    error_log('DEBUG BlendleImport: ' . $msg);
   }
 
   /**

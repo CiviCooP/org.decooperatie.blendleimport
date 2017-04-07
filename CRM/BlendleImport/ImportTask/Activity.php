@@ -27,6 +27,10 @@ class CRM_BlendleImport_ImportTask_Activity extends CRM_BlendleImport_ImportTask
     $records = $this->getRecords();
     foreach($records as $record) {
 
+      if(empty($record->contact_id)) {
+        $this->log('ERROR: Activity could not be created for record id ' . $record->id . ': NOT MATCHED WITH CONTACT', PEAR_LOG_ERR);
+      }
+
       $activityParams = [
         'activity_type_id' => 'BlendleImport_ArticleData',
         'activity_date_time' => $this->job->import_date,
