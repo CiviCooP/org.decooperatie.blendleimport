@@ -15,7 +15,7 @@
  * @throws API_Exception
  */
 function civicrm_api3_blendle_import_record_get($params) {
-  $returnValues = CRM_BlendleImport_BAO_ImportRecord::getRecords($params, TRUE);
+  $returnValues = CRM_BlendleImport_BAO_ImportRecord::getRecords($params, 'array');
   return civicrm_api3_create_success($returnValues, $params, 'BlendleImportRecord', 'Get');
 }
 

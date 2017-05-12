@@ -162,15 +162,15 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
   /**
    * Get records for this import job.
    * @param bool $unique Return unique contacts?
-   * @param bool $asArray Return an array instead of objects?
+   * @param string $returnFormat Whether to return 'object', 'array' or 'count'.
    * @return array Import Records
    */
-  public function getRecords($unique = FALSE, $asArray = FALSE) {
+  public function getRecords($unique = FALSE, $returnFormat = 'object') {
     $params = ['job_id' => $this->id];
     if ($unique) {
       $params['parent'] = ['IS NULL' => TRUE];
     }
-    return CRM_BlendleImport_BAO_ImportRecord::getRecords($params, $asArray);
+    return CRM_BlendleImport_BAO_ImportRecord::getRecords($params, $returnFormat);
   }
 
   /**

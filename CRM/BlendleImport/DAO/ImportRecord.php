@@ -22,6 +22,7 @@
  * @property float $vmoney_amount
  * @property float $approximated_sales_amount_eur
  * @property float $approximated_revenue_eur
+ * @property float $fb_costs
  * @property float $price
  * @property int $parent
  * @property string $state
@@ -133,6 +134,11 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'name'  => 'approximated_revenue_eur',
           'type'  => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Approximated Revenue EUR'),
+        ],
+        'fb_costs'                         => [
+          'name'  => 'fb_costs',
+          'type'  => CRM_Utils_Type::T_FLOAT,
+          'title' => ts('FB Costs'),
         ],
         'price'                         => [
           'name'  => 'price',

@@ -57,7 +57,7 @@
 
             CRM.confirm({
                     title: ts('Confirm delete'),
-                    message: ts('Are you sure you want to delete this import job? (This will NOT delete imported activities and payments. You will no longer be able to resume this import job or to use its data in new mailings.)')
+                    message: ts("Are you sure you want to delete this import job?") + "<br>\n" + ts("(This will NOT delete imported activities and payments. You will no longer be able to resume this import job or use its data in new mailings.)")
                 }).on('crmConfirm:yes', function() {
                     location.href = that.attr('data-delete-url');
                 });

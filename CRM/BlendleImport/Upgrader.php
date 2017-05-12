@@ -11,7 +11,8 @@
 class CRM_BlendleImport_Upgrader extends CRM_BlendleImport_Upgrader_Base {
 
   /**
-   * On extension install:
+   * On extension install...
+   * @return bool Success
    */
   public function install() {
 
@@ -21,15 +22,35 @@ class CRM_BlendleImport_Upgrader extends CRM_BlendleImport_Upgrader_Base {
 
     // Run config items loader
     CRM_BlendleImport_Utils::loadConfigFromJson();
+
+    return true;
   }
 
   /**
-   * On extension uninstall:
+   * On extension uninstall...
+   * @return bool Success
    */
   public function uninstall() {
 
     // Drop tables
     $this->executeSqlFile('sql/uninstall.sql');
+
+    return true;
+  }
+
+  /**
+   * On upgrade to 1.2.0...
+   * @return bool Success
+   */
+  public function upgrade_1001() {
+
+    // Add database column
+    $this->executeSqlFile('sql/upgrade_1001.sql');
+
+    // Load updated custom fields
+    CRM_BlendleImport_Utils::loadConfigFromJson();
+
+    return true;
   }
 
 }

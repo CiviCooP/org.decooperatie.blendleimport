@@ -9,6 +9,9 @@
  */
 class CRM_BlendleImport_Utils {
 
+  /** @var float Plugin version, used below to check if loadConfigFromJson needs to run. */
+  private static $plugin_version = 1.2;
+
   /**
    * @var string Setting name where we store if config items have already been imported.
    */
@@ -24,7 +27,7 @@ class CRM_BlendleImport_Utils {
     // Check if this function has already run (note: this is >= 4.7 only syntax!)
     $configLoaded = Civi::settings()->get(static::$jsonSettingName);
 
-    if (!isset($configLoaded) || $configLoaded == FALSE) {
+    if (!isset($configLoaded) || $configLoaded == false || $configLoaded < static::$plugin_version) {
 
       $jsonPath = realpath(__DIR__ . '/../../json/configitems/');
 
@@ -40,8 +43,8 @@ class CRM_BlendleImport_Utils {
       $loader = new CRM_Civiconfig_Loader;
       $result = $loader->updateConfigurationFromJson($jsonPath);
 
-      // Set configLoaded = true, and show status message with result
-      Civi::settings()->set(static::$jsonSettingName, TRUE);
+      // Set configLoaded = version, and show status message with result
+      Civi::settings()->set(static::$jsonSettingName, static::$plugin_version);
 
       CRM_Core_Session::setStatus(ts('Added custom data and config for Blendle Import extension.'));
       // . "\n\nDebug output:\n" . nl2br(print_r($result, TRUE)) . "\n");

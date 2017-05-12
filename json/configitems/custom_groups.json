@@ -61,6 +61,21 @@
       },
       {
         "custom_group_id": "11",
+        "name": "Article_Price",
+        "label": "Article Price",
+        "data_type": "Money",
+        "html_type": "Text",
+        "is_required": "0",
+        "is_searchable": "0",
+        "is_search_range": "0",
+        "weight": "4",
+        "is_active": "1",
+        "is_view": "0",
+        "text_length": "255",
+        "column_name": "price_65"
+      },
+      {
+        "custom_group_id": "11",
         "name": "Sales_Count",
         "label": "Sales Count",
         "data_type": "Float",
@@ -169,18 +184,51 @@
       },
       {
         "custom_group_id": "11",
-        "name": "Article_Price",
-        "label": "Article Price",
+        "name": "FB_Costs",
+        "label": "FB Costs",
         "data_type": "Money",
         "html_type": "Text",
         "is_required": "0",
         "is_searchable": "0",
         "is_search_range": "0",
-        "weight": "4",
+        "weight": "12",
         "is_active": "1",
         "is_view": "0",
         "text_length": "255",
-        "column_name": "price_65"
+        "column_name": "fbcosts_68"
+      }
+    ]
+  },
+  "blendle_import_contributions": {
+    "name": "Blendle_Import_Contributions",
+    "title": "Blendle Import (Contributions)",
+    "extends": "Contribution",
+    "extends_entity_column_value": [
+      "11"
+    ],
+    "style": "Inline",
+    "collapse_display": "1",
+    "weight": "12",
+    "is_active": "1",
+    "table_name": "civicrm_value_blendle_import_contributions__12",
+    "is_multiple": "0",
+    "collapse_adv_display": "1",
+    "is_reserved": "0",
+    "fields": [
+      {
+        "custom_group_id": "12",
+        "name": "Import_Job_ID",
+        "label": "Import Job ID",
+        "data_type": "Int",
+        "html_type": "Text",
+        "is_required": "0",
+        "is_searchable": "1",
+        "is_search_range": "0",
+        "weight": "1",
+        "is_active": "1",
+        "is_view": "0",
+        "text_length": "255",
+        "column_name": "import_job_id_68"
       }
     ]
   }

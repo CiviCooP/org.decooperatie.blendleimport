@@ -11,12 +11,12 @@
 class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRecord {
 
   /**
-   * Fetch an array of Import Record rows.
+   * Fetch Import Record rows.
    * @param array $params Input parameters to find object(s).
-   * @param bool $asArray Whether to return an array of arrays instead of objects.
-   * @return static[]|null The found object(s) or null
+   * @param string $returnFormat Whether to return 'object', 'array' or 'count'.
+   * @return static[]|int|null The found object(s), count or null
    */
-  public static function getRecords($params = [], $asArray = FALSE) {
+  public static function getRecords($params = [], $returnFormat = 'object') {
     $result = [];
     $instance = new static;
 
@@ -32,10 +32,16 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
     if (!empty($params)) {
       $instance->copyValues($params);
     }
-    $instance->find();
 
+    // Return count?
+    if($returnFormat == 'count') {
+      return $instance->count();
+    }
+
+    // Return records as an array of arrays/objects
+    $instance->find();
     while ($instance->fetch()) {
-      if ($asArray) {
+      if ($returnFormat == 'array') {
         $result[$instance->id] = static::recordToArray($instance);
       } else {
         $result[$instance->id] = clone $instance;
@@ -51,11 +57,7 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
    * @return int Record Count
    */
   public static function getRecordCount($params = []) {
-    $instance = new static;
-    if (!empty($params)) {
-      $instance->copyValues($params);
-    }
-    return $instance->count();
+    return static::getRecords($params, 'count');
   }
 
   /**

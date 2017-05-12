@@ -44,14 +44,17 @@ class CRM_BlendleImport_ImportTask_Payment extends CRM_BlendleImport_ImportTask_
         continue;
       }
 
-      // Calculate total revenue
+      // Calculate total revenue (= activity revenue amount minus campaign costs)
       $revenueFieldId = $cf->getApiFieldName('Blendle_Import', 'Revenue_Amount');
+      $campaignCostsFieldId = $cf->getApiFieldName('Blendle_Import', 'FB_Costs');
       $revenue = 0;
       foreach($activities as $activity) {
           $revenue += (double)$activity[$revenueFieldId];
+          $revenue -= (double)$activity[$campaignCostsFieldId];
       }
 
       // Create contribution
+      $importJobFieldId = $cf->getApiFieldName('Blendle_Import_Contributions', 'Import_Job_ID');
       $totalAmount = number_format(-$revenue, 2, '.', '');
       $contributionParams = [
         'financial_type_id' => 'Royalties',
@@ -60,6 +63,7 @@ class CRM_BlendleImport_ImportTask_Payment extends CRM_BlendleImport_ImportTask_
         'payment_instrument_id' => 'Handled by Exact',
         'receive_date' => $this->job->import_date,
         'source' => 'Blendle Import (job: ' . $this->job->id . ')',
+        $importJobFieldId => $this->job->id,
       ];
       $cret = civicrm_api3('Contribution', 'create', $contributionParams);
 

@@ -49,6 +49,7 @@ class CRM_BlendleImport_ImportTask_Activity extends CRM_BlendleImport_ImportTask
         $apiFieldName('Sales_Amount') => number_format($record->approximated_sales_amount_eur, 2, '.', ''),
         $apiFieldName('Revenue_Amount') => number_format($record->approximated_revenue_eur, 2, '.', ''),
         $apiFieldName('Article_Price') => number_format($record->price, 2, '.', ''),
+        $apiFieldName('FB_Costs') => number_format($record->fb_costs, 2, '.', ''),
       ];
       $ret = civicrm_api3('Activity', 'create', $activityParams);
 
