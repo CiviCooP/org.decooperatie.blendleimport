@@ -207,12 +207,12 @@
       "11"
     ],
     "style": "Inline",
-    "collapse_display": "1",
+    "collapse_display": "0",
     "weight": "12",
     "is_active": "1",
     "table_name": "civicrm_value_blendle_import_contributions__12",
     "is_multiple": "0",
-    "collapse_adv_display": "1",
+    "collapse_adv_display": "0",
     "is_reserved": "0",
     "fields": [
       {

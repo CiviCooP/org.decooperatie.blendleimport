@@ -62,7 +62,7 @@ class CRM_BlendleImport_ImportTask_Payment extends CRM_BlendleImport_ImportTask_
         'contact_id' => $contactId,
         'payment_instrument_id' => 'Handled by Exact',
         'receive_date' => $this->job->import_date,
-        'source' => 'Blendle Import (job: ' . $this->job->id . ')',
+        'source' => 'Blendle (' . $this->job->name . ')',
         $importJobFieldId => $this->job->id,
       ];
       $cret = civicrm_api3('Contribution', 'create', $contributionParams);
