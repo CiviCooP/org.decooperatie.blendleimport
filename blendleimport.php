@@ -18,15 +18,15 @@ function blendleimport_civicrm_navigationMenu(&$menu) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_tokens
  */
 function blendleimport_civicrm_tokens(&$tokens) {
-  CRM_BlendleImport_Tokens::tokens($tokens);
+  CRM_BlendleImport_Tokens::addTokens($tokens);
 }
 
 /**
  * Implements hook_civicrm_tokenValues(): replace mailing token values.
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_tokenValues
  */
-function tokens_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null) {
-  CRM_BlendleImport_Tokens::tokenValues($values, $cids, $job, $tokens, $context);
+function blendleimport_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null) {
+  CRM_BlendleImport_Tokens::addTokenValues($values, $cids, $tokens);
 }
 
 

@@ -6,7 +6,13 @@
     </div>
 
     {if !($action eq 1 and $action eq 2)}
-        <div class="crm-submit-buttons" style="margin-bottom:10px;">
+        <div class="crm-submit-buttons" style="margin-bottom:15px;">
+          {if $reportInstanceUrl}
+              <div class="action-link" style="float:right;">
+                {crmButton p=$reportInstanceUrl id="revenueReport" icon="list-alt"}{ts}View Report{/ts}{/crmButton}
+              </div>
+          {/if}
+
             <div class="action-link">
                 {crmButton p="civicrm/a/#blendleimport?action=create" id="newImportJob" icon="plus-circle"}{ts}New Import{/ts}{/crmButton}
             </div>

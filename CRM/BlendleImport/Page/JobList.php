@@ -15,6 +15,7 @@ class CRM_BlendleImport_Page_JobList extends CRM_Core_Page {
    */
   public function run() {
     CRM_Utils_System::setTitle(ts('Blendle Import'));
+    $this->assign('reportInstanceUrl', CRM_BlendleImport_Utils::getReportInstanceUrl());
 
     $jobs = CRM_BlendleImport_BAO_ImportJob::getJobs();
     $this->assign('rows', $jobs);

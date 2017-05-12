@@ -53,7 +53,7 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       abl.sales_amount_63 AS activity_sales_amount,
       abl.revenue_64 AS activity_revenue,
       abl.price_65 AS activity_article_price,
-      abl.fbcosts_66 AS activity_fb_costs
+      abl.fbcosts_68 AS activity_fb_costs
       ";
   }
 

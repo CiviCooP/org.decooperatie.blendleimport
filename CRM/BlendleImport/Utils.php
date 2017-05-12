@@ -69,4 +69,21 @@ class CRM_BlendleImport_Utils {
     _blendleimport_civix_navigationMenu($menu);
   }
 
+  /**
+   * Return the url for the first instance of our revenue report.
+   * @return string URL
+   */
+  public static function getReportInstanceUrl() {
+    try {
+      $reportInstanceId = civicrm_api3('ReportInstance', 'getvalue', [
+        'report_id' => 'blendlerevenuereport',
+        'return'    => 'id',
+        'options'   => ['limit' => 1],
+      ]);
+      return 'civicrm/report/instance/' . $reportInstanceId;
+    } catch(\Exception $e) {
+      return '';
+    }
+  }
+
 }
