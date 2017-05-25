@@ -102,6 +102,7 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       'activity_id'               => ['title' => ts('Activity ID'), 'type' => CRM_Report_Form::OP_INT],
       'activity_article_title'    => ['title' => ts('Article Title'), 'type' => CRM_Report_Form::OP_STRING],
       'activity_sales_count'      => ['title' => ts('Sales Count'), 'type' => CRM_Report_Form::OP_INT],
+      'activity_premium_reads'    => ['title' => ts('Premium Reads'), 'type' => CRM_Report_Form::OP_INT],
       'activity_refunded_amount'  => ['title' => ts('Refunded Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
       'activity_vmoney_amount'    => ['title' => ts('Vmoney Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
       'activity_revenue'          => ['title' => ts('Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],

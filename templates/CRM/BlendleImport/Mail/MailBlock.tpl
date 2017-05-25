@@ -2,6 +2,7 @@
     <tr>
         <th>Article Title</th>
         <th>Sales Count</th>
+        <th>Premium Reads</th>
         <th>Refunded Amount</th>
         <th>Vmoney Amount</th>
         <th>Revenue</th>
@@ -11,6 +12,7 @@
     <tr>
         <td>{$activity.activity_article_title}</td>
         <td align="right">{$activity.activity_sales_count}</td>
+        <td align="right">{$activity.activity_premium_reads}</td>
         <td align="right">{$activity.activity_refunded_amount}</td>
         <td align="right">{$activity.activity_vmoney_amount}</td>
         <td align="right">{$activity.activity_revenue}</td>
@@ -23,7 +25,7 @@
     {/foreach}
 
     <tr>
-        <td colspan="4"><strong>{ts}Total{/ts}</strong></td>
+        <td colspan="5"><strong>{ts}Total{/ts}</strong></td>
         <td colspan="2" align="right"><strong>&euro; {$data.total_formatted}</strong></td>
     </tr>
 </table>
