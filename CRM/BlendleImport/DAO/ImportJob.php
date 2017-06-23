@@ -25,6 +25,7 @@ class CRM_BlendleImport_DAO_ImportJob extends CRM_Core_DAO {
    * Contacts/activities/contributions means: processing X is the next step.
    */
   const STATUS_NEW = 'new';
+  const STATUS_PARSEFILE = 'parsefile';
   const STATUS_CONTACTS = 'contacts';
   const STATUS_ACTIVITIES = 'activities';
   const STATUS_TAGSMEMB = 'tagsmemb';
@@ -112,6 +113,18 @@ class CRM_BlendleImport_DAO_ImportJob extends CRM_Core_DAO {
           'title'       => ts('Created By'),
           'FKClassName' => 'CRM_Contact_DAO_Contact',
           'default'     => 'NULL',
+        ],
+        'data'                => [
+          'name'    => 'data',
+          'type'    => CRM_Utils_Type::T_LONGTEXT,
+          'title'   => ts('CSV Data'),
+          'default' => 'NULL',
+        ],
+        'mapping'             => [
+          'name'    => 'mapping',
+          'type'    => CRM_Utils_Type::T_TEXT,
+          'title'   => ts('Column Mapping'),
+          'default' => 'NULL',
         ],
       ];
     }

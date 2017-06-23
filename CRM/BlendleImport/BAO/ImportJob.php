@@ -78,9 +78,17 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
     $instance->copyValues($params);
     $instance->save();
 
-    // Handle CSV upload if csv_upload contains data (= base64 encoded CSV) + try to match records
+    // Handle CSV upload if csv_upload contains data (= base64 encoded CSV)
     if (!empty($params['csv_upload'])) {
-      $instance->storeCSVData($params['csv_upload'], TRUE);
+      $instance->data = $params['csv_upload'];
+      $instance->setStatus(static::STATUS_PARSEFILE);
+      $instance->save();
+    }
+
+    // If mapping contains data, store mapping and try to parse CSV and match records
+    if (!empty($params['mapping'])) {
+      $instance->mapping = $params['mapping'];
+      $instance->parseCSVData();
       $instance->setStatus(static::STATUS_CONTACTS);
       $instance->save();
       $instance->matchRecords();
@@ -126,6 +134,9 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
       case self::STATUS_NEW:
         return ts('New');
         break;
+      case self::STATUS_PARSEFILE:
+        return ts('Parse File');
+        break;
       case self::STATUS_CONTACTS:
         return ts('Match Contacts');
         break;
@@ -148,15 +159,13 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
   }
 
   /**
-   * Store CSV data to file and store the file name.
+   * Parse CSV data in $this->data based on the column mapping in $this->mapping.
    * This does not save the object - call save() manually!
-   * @param mixed $data CSV data
-   * @param bool $isBase64Encoded Whether data is base64 œencoded
    * @return bool Success
    */
-  public function storeCSVData($data, $isBase64Encoded = TRUE) {
+  public function parseCSVData() {
     $csvfile = new CRM_BlendleImport_Import_CSVReader($this->id);
-    return $csvfile->writeToTable($data, $isBase64Encoded);
+    return $csvfile->writeToTable($this->data, $this->mapping);
   }
 
   /**

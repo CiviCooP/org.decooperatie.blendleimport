@@ -25,7 +25,7 @@
     {/foreach}
 
     <tr>
-        <td colspan="5"><strong>{ts}Total{/ts}</strong></td>
+        <td colspan="4"><strong>{ts}Total{/ts}</strong></td>
         <td colspan="2" align="right"><strong>&euro; {$data.total_formatted}</strong></td>
     </tr>
 </table>

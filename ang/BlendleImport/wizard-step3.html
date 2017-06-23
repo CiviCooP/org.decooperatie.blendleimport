@@ -1,93 +1,91 @@
-<h2>{{ts('Import Data')}}</h2>
+<h2>{{ts('Match Contacts')}}</h2>
 
-<p>{{ts('Check all import tasks you want to run. You can run all tasks at once; if you don\'t, you can return to this step later to run any remaining tasks.')}}</p>
+<p>
+    {{ts('Match all imported lines from the CSV file to CiviCRM contacts, then press \'Save & Continue\' at the bottom of the page to continue the import.')}}<br>
+    {{ts('First match all existing contacts, then create new contacts for the remaining entries if necessary. Author names that appear multiple times in the import file only appear once here - all records will be automatically updated.')}}
+</p>
 
-<div class="crm-block crm-form-block">
-    <table class="wizard-steps">
+<div class="help" ng-show="job_records.length == 0">
+    <p><em>{{ts('Something went wrong - no records available!')}}</em></p>
+</div>
+
+<div class="crm-ui-custom-buttons-top">
+    <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="loadThenGotoStep4()"
+            ng-show="job.id && job.status != 'new' && job.status != 'parsefile' && job.status != 'contacts'">{{ts('Skip')}}
+    </button>
+</div>
+
+<div ng-hide="job_records.length == 0">
+    <p>
+        <!-- ng-show="countRecordsNoMatch()" -->
+        <button crm-confirm="{message: ts('Create %1 missing contacts?', {1: countRecordsNoMatch()}) }" on-yes="createContacts()">{{ ts('Create Missing Contacts') }}
+        </button>
+        <button ng-click="recheckRecords()">Re-check</button>
+    </p>
+    <table class="csv-helper">
+        <thead>
         <tr>
-            <td class="check">
-                <input type="checkbox" id="task_activity" ng-model="tasks.activity" />
+            <th>Who</th>
+            <th>Resolution
+            <th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="(rowIndex, row) in job_records" class="{{ row.state }}">
+            <td>
+                {{ row.byline }}
+                <!-- <br><em>[debug: {{row.id }} {{ row.contact_id }} {{ row.state }}]</em> -->
             </td>
             <td>
-                <label for="task_activity">{{ts('Create Activities')}}</label><br>
-                {{ taskCounts.activity_count }} activities will be created.
-                <a class="ng-link" ng-click="showPreview=!showPreview">{{ts('Toggle Preview')}}</a>
-
-                <div id="activity-preview-table" ng-show="showPreview">
-                    <table id="options" class="display">
-                        <thead>
-                        <tr>
-                            <th>{{ts('Contact ID')}}</th>
-                            <th>{{ts('Title')}}</th>
-                            <th class="no">{{ts('Sales #')}}</th>
-                            <th class="no">{{ts('Premium #')}}</th>
-                            <th class="no">{{ts('Sales €')}}</th>
-                            <th class="no">{{ts('Refunded €')}}</th>
-                            <th class="no">{{ts('Vmoney €')}}</th>
-                            <th class="no">{{ts('Revenue €')}}</th>
-                            <th class="no">{{ts('FB Costs')}}</th>
-                        </tr>
-                        </thead>
-                        <tr ng-repeat="(rowIndex, row) in job_records|limitTo:25" class="crm-importrecord crm-entity">
-                            <td>{{row.contact_id}}</td>
-                            <td>{{row.title|limitTo:40}}&hellip;</td>
-                            <td class="no">{{row.sales_count}}</td>
-                            <td class="no">{{row.premium_reads}}</td>
-                            <td class="no">{{row.sales_amount}}</td>
-                            <td class="no">{{row.refunded_amount}}</td>
-                            <td class="no">{{row.vmoney_amount}}</td>
-                            <td class="no">{{row.approximated_revenue_eur}}</td>
-                            <td class="no">{{row.fb_costs}}</td>
-                        </tr>
-                    </table>
-                    {{row.id}}
+                <!-- chosen/found contact  -->
+                <div ng-if="(row.state == 'chosen' || row.state == 'found') && row.contact_id != null">
+                    <div class="csv-helper-cols">
+                        <div class="csv-helper-cols__left">
+                            <span ng-if="row.state == 'chosen'">Chosen</span>
+                            <span ng-if="row.state == 'found'">Found</span>
+                            <a class="ng-link" ng-click="viewContact(row.contact_id)">{{ row.contact_id }} {{ row.resolution[row.contact_id].name }}</a>
+                        </div>
+                        <div class="csv-helper-cols__right">
+                            <button ng-click="unChooseContact()">{{ ts( row.state == 'chosen' ? 'Reset' : 'Change' )
+                                }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- multiple matches -->
+                <div ng-if="(row.state == 'multiple' || row.state == 'impossible') && row.resolution_count > 0">
+                    {{ row.resolution_count > 1 ? "Several candidates" : "Candidate" }} found:
+                    <ul>
+                        <li ng-repeat="(resolutionIndex, contact) in row.resolution">
+                            <button ng-click="chooseContact()">Choose</button>
+                            {{ contact.match }}:
+                            <a class="ng-link" ng-click="viewContact(contact.contact_id)">({{ contact.contact_id }}) {{ contact.name }}</a>
+                        </li>
+                    </ul>
+                    <input crm-entityref="{entity: 'Contact', select: {allowClear:true, placeholder:ts('Or Select Different Contact')}}" ng-change="chooseContact2()" ng-model="row.contact_id"/>
+                </div>
+                <!-- too many candidates -->
+                <div ng-if="row.state == 'multiple' && row.resolution_count == 0">
+                    {{ ts('More than 10 candidate contacts.') }}<br>
+                    <input crm-entityref="{entity: 'Contact', select: {allowClear:true, placeholder:ts('Select Contact')}}"
+                           ng-change="chooseContact2()" ng-model="row.contact_id"/>
+                </div>
+                <div ng-if="row.state == 'impossible' && row.resolution_count == 0">
+                    {{ ts('No matches.') }}<br>
+                    <input crm-entityref="{entity: 'Contact', select: {allowClear:true, placeholder:ts('Select Contact')}}" ng-change="chooseContact2()" ng-model="row.contact_id"/>
                 </div>
             </td>
         </tr>
-        <tr ng-show="job.add_tag">
-            <td class="check">
-                <input type="checkbox" id="task_tag" ng-model="tasks.tag"/>
-            </td>
-            <td>
-                <label for="task_tag">{{ts('Add tags')}}</label><br>
-                {{ taskCounts.tag_count }} tags will be added.
-            </td>
-        </tr>
-        <tr ng-show="job.add_membership_type">
-            <td class="check">
-                <input type="checkbox" id="task_membership" ng-model="tasks.membership"/>
-            </td>
-            <td>
-                <label for="task_membership">{{ts('Create memberships')}}</label><br>
-                {{ taskCounts.membership_count }} memberships will be created.
-            </td>
-        </tr>
-        <tr>
-            <td class="check">
-                <input type="checkbox" id="tasks_payment" ng-model="tasks.payment" />
-            </td>
-            <td>
-                <label for="tasks_payment">{{ts('Generate Payments')}}</label><br>
-                Up to {{ taskCounts.payment_count }} contributions will be created.
-            </td>
-        </tr>
+        </tbody>
     </table>
 </div>
 
 <div class="crm-ui-custom-buttons">
-    <button crm-icon="fa-caret-right fa-lg" title="{{ts('Run Import')}}" ng-click="submitStep3()">{{ts('Run Import')}}
+    <button crm-icon="fa-caret-right fa-lg" title="{{ts('Save and Continue')}}" ng-click="submitStep3()">{{ts('Save & Continue')}}
     </button>
-    <button crm-icon="fa-check fa-lg" title="{{ts('Exit Wizard')}}" ng-click="leave()" ng-show="logOutput.length > 0">{{ts('Exit')}}</button>
+    <button crm-icon="fa-fast-forward" title="{{ts('Skip step')}}" ng-click="loadThenGotoStep4()"
+            ng-show="job.id && job.status != 'new' && job.status != 'contacts'">{{ts('Skip')}}
+    </button>
 </div>
 
-<div class="crm-block crm-form-block log-block" ng-show="logOutput.length > 0">
-    <h4>Log Output</h4>
-    <p>{{ ts('Please keep this window open and check the output below for errors. Once the import is complete, search for activities and contributions to check the imported data.') }}</p>
-    <div class="log-output">
-        <p class="log-line" ng-repeat="line in logOutput track by $index">
-            <span class="date" ng-show="line.date != null">[{{ line.date }}]</span>
-            <span class="priority" ng-show="line.priority != null">({{ line.priority }}) </span>
-            <span class="message">{{ line.message }}</span>
-        </p>
-    </div>
 </div>

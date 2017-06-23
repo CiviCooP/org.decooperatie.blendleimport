@@ -27,6 +27,16 @@
                 });
             },
 
+            getColumnInfo: function getColumnInfo(jobId) {
+                // Get information to match import file columns
+                return qApi('BlendleImportJob', 'getcolumns', {id: jobId}).then(function (apiResult) {
+                        if (!apiResult || apiResult.is_error || !apiResult.values) {
+                            return false;
+                        }
+                        return apiResult.values;
+                    });
+            },
+
             getRecords: function getRecords(jobId) {
                 // Get all unique BlendleImportRecords for a job ID
                 return qApi('BlendleImportRecord', 'get',

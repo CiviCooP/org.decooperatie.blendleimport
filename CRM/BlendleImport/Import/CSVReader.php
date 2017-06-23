@@ -24,22 +24,24 @@ class CRM_BlendleImport_Import_CSVReader {
   /**
    * Write data from a CSV file to the import_records table.
    * @param string $data CSV Data
-   * @param bool $isBase64Encoded Is $data base64 encoded?
+   * @param array $mapping CSV Column Mapping
    * @return bool Success
    * @throws CRM_BlendleImport_Exception If data could not be read / parsed
    */
-  public function writeToTable($data, $isBase64Encoded = TRUE) {
+  public function writeToTable($data, $mapping = []) {
 
     // Decode base64 if necessary
-    if ($isBase64Encoded) {
-      if (preg_match('@^data:[^;]*;base64,@', $data, $matches)) {
-        $data = base64_decode(substr($data, strlen($matches[0])), TRUE);
-        if ($data === FALSE) {
-          throw new CRM_BlendleImport_Exception('Could not decode base64 encoded data: ' . htmlspecialchars(substr($data, 0, 20)));
-        }
-      } else {
-        throw new CRM_BlendleImport_Exception('Expected URL-encoded data but got: ' . htmlspecialchars(substr($data, 0, 16)));
+    if (preg_match('@^data:[^;]*;base64,@', $data, $matches)) {
+      $data = base64_decode(substr($data, strlen($matches[0])), TRUE);
+      if ($data === FALSE) {
+        throw new CRM_BlendleImport_Exception('Could not decode base64 encoded data: ' . htmlspecialchars(substr($data, 0, 20)));
       }
+    }
+
+    // TODO: Add mapping support to CSV parser
+    // TODO: Allow parsing CSV and finding column headers without storing data
+    if(!empty($mapping)) {
+       // Handle mapping
     }
 
     // Parse CSV into an array of arrays

@@ -53,4 +53,16 @@ class CRM_BlendleImport_Upgrader extends CRM_BlendleImport_Upgrader_Base {
     return true;
   }
 
+  /**
+   * On upgrade to 1.3.0...
+   * @return bool Success
+   */
+  public function upgrade_1002() {
+
+    // Add database columns
+    $this->executeSqlFile('sql/upgrade_1002.sql');
+
+    return true;
+  }
+
 }

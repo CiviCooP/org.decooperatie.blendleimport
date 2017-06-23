@@ -27,6 +27,7 @@
         var ts = $scope.ts = CRM.ts('org.decooperatie.blendleimport');
 
         $scope.job = job;
+        $scope.job_columns = [];
         $scope.job_records = [];
         $scope.csv_upload = null;
 
@@ -37,7 +38,8 @@
         $scope.includeTemplateNames = {
             0: '~/BlendleImport/wizard-step1.html',
             1: '~/BlendleImport/wizard-step2.html',
-            2: '~/BlendleImport/wizard-step3.html'
+            2: '~/BlendleImport/wizard-step3.html',
+            3: '~/BlendleImport/wizard-step4.html'
         };
 
         var queryParams = $location.search();
@@ -53,7 +55,7 @@
             // window.console.log($scope.uiWizardCtrl.$validStep(), $scope.uiWizardCtrl, $scope.job, $scope);
             if ($scope.uiWizardCtrl.$validStep() && ($scope.job.record_count || $scope.job.csv_upload)) {
 
-                $scope.job.status = 'contacts';
+                $scope.job.status = 'parsefile';
                 crmStatus({start: ts('Saving and processing...'), success: ts('Saved')},
                     importJobsMgr.saveJob($scope.job)
                 ).then(function (result) {
@@ -71,8 +73,24 @@
             }
         };
 
-        // Submit step 2 (match contacts)
+        // Submit step 2 (parse file)
         $scope.submitStep2 = function () {
+            $scope.job_status = 'contacts';
+            crmStatus({start: ts('Saving and processing...'), success: ts('Saved')}, importJobsMgr.saveJob($scope.job)
+                ).then(function(result) {
+                if (result) {
+                    $scope.loadThenGotoStep3();
+                } else {
+                    crmUiAlert({
+                        text: ts('An error occurred while trying to save column info.'),
+                        title: ts('Error')
+                    });
+                }
+            });
+        };
+
+        // Submit step 3 (match contacts)
+        $scope.submitStep3 = function () {
 
             crmStatus({start: ts('Checking match status...'), success: ts('Finished')},
                 importJobsMgr.matchCheck($scope.job.id)
@@ -88,8 +106,8 @@
             });
         };
 
-        // Submit step 3 (import data)
-        $scope.submitStep3 = function () {
+        // Submit step 4 (import data)
+        $scope.submitStep4 = function () {
             $scope.logOutput = [{'message':'Running import, please wait...'}];
             var qchain = $q.when(); // We need to queue all import tasks in order!
 
@@ -113,13 +131,22 @@
         $scope.loadThenGotoStep2 = function () {
             // Load records = contacts to match
             crmStatus({start: ts('Loading data...'), success: ts('Loading complete')},
-                importJobsMgr.getRecords($scope.job.id).then(function (result) {
-                    $scope.job_records = result;
+                importJobsMgr.getColumnInfo($scope.job.id).then(function (result) {
+                    $scope.job_columns = result;
                     $scope.uiWizardCtrl.goto(1);
                 }));
         };
 
         $scope.loadThenGotoStep3 = function () {
+            // Load records = contacts to match
+            crmStatus({start: ts('Loading data...'), success: ts('Loading complete')},
+                importJobsMgr.getRecords($scope.job.id).then(function (result) {
+                    $scope.job_records = result;
+                    $scope.uiWizardCtrl.goto(2);
+                }));
+        };
+
+        $scope.loadThenGotoStep4 = function () {
             // Preset tasks to run
             $scope.tasks = {
                 'activity': (['tagsmemb', 'payments', 'complete'].indexOf($scope.job.status) == -1),
@@ -132,7 +159,7 @@
             crmStatus({start: ts('Loading data...'), success: ts('Loading complete')},
                 importJobsMgr.getImportCount($scope.job.id).then(function (result) {
                     $scope.taskCounts = result;
-                    $scope.uiWizardCtrl.goto(2);
+                    $scope.uiWizardCtrl.goto(3);
                 }));
         };
 
