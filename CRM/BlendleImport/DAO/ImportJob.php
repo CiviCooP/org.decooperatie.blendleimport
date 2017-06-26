@@ -17,6 +17,8 @@
  * @property string $status
  * @property string $created_date
  * @property int $created_user_id
+ * @property string $data
+ * @property string $mapping
  */
 class CRM_BlendleImport_DAO_ImportJob extends CRM_Core_DAO {
 

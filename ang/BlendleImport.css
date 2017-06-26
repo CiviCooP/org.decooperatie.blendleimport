@@ -19,7 +19,7 @@
     margin: -10px 0 15px 0;
 }
 
-#blendle-import-wizard .clear-link {
+#blendle-import-wizard .clear-link, #blendle-import-wizard .add-new-link {
     cursor: pointer;
     display: block;
     font-size: 10px;
@@ -36,6 +36,16 @@
 
 #blendle-import-wizard input[type=file] {
     border: 0 !important;
+}
+
+#blendle-import-wizard .crm-matchcolumn .is-required {
+    color: #f00;
+    font-weight: bold;
+}
+
+#blendle-import-wizard .crm-matchcolumn select {
+    height: 28px;
+    font-size: 14px;
 }
 
 #blendle-import-wizard td.check {

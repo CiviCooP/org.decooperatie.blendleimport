@@ -27,7 +27,7 @@
         var ts = $scope.ts = CRM.ts('org.decooperatie.blendleimport');
 
         $scope.job = job;
-        $scope.job_columns = [];
+        $scope.job_fields = [];
         $scope.job_records = [];
         $scope.csv_upload = null;
 
@@ -53,9 +53,8 @@
         $scope.submitStep1 = function () {
             // Check if form is valid + either a CSV file is already present or one is being uploaded
             // window.console.log($scope.uiWizardCtrl.$validStep(), $scope.uiWizardCtrl, $scope.job, $scope);
-            if ($scope.uiWizardCtrl.$validStep() && ($scope.job.record_count || $scope.job.csv_upload)) {
+            if ($scope.uiWizardCtrl.$validStep() && ($scope.job.data_present || $scope.job.data)) {
 
-                $scope.job.status = 'parsefile';
                 crmStatus({start: ts('Saving and processing...'), success: ts('Saved')},
                     importJobsMgr.saveJob($scope.job)
                 ).then(function (result) {
@@ -75,14 +74,29 @@
 
         // Submit step 2 (parse file)
         $scope.submitStep2 = function () {
-            $scope.job_status = 'contacts';
-            crmStatus({start: ts('Saving and processing...'), success: ts('Saved')}, importJobsMgr.saveJob($scope.job)
+
+            var mappingData = {};
+            var isValid = true;
+            _.each($scope.job_fields, function(field, fIndex) {
+                if(field.required && !field.mapping) {
+                    isValid = false;
+                }
+               mappingData[field.name] = field.mapping;
+            });
+            if(!isValid) {
+                $scope.genericFormError();
+                return false;
+            }
+            // window.console.log(mappingData);
+
+            crmStatus({start: ts('Saving and processing...'), success: ts('Saved')},
+                importJobsMgr.updateMappingAndLoadData($scope.job.id, mappingData)
                 ).then(function(result) {
                 if (result) {
                     $scope.loadThenGotoStep3();
                 } else {
                     crmUiAlert({
-                        text: ts('An error occurred while trying to save column info.'),
+                        text: ts('An error occurred while trying to save column mapping data.'),
                         title: ts('Error')
                     });
                 }
@@ -96,7 +110,7 @@
                 importJobsMgr.matchCheck($scope.job.id)
             ).then(function (result) {
                 if (result.values == true) {
-                    $scope.loadThenGotoStep3();
+                    $scope.loadThenGotoStep4();
                 } else {
                     crmUiAlert({
                         text: ts('Not all records have been matched with a CiviCRM contact yet. Match all contacts before continuing.'),
@@ -132,7 +146,7 @@
             // Load records = contacts to match
             crmStatus({start: ts('Loading data...'), success: ts('Loading complete')},
                 importJobsMgr.getColumnInfo($scope.job.id).then(function (result) {
-                    $scope.job_columns = result;
+                    $scope.job_fields = result;
                     $scope.uiWizardCtrl.goto(1);
                 }));
         };
@@ -179,6 +193,11 @@
         $scope.viewContact = function (cid) {
             var url = CRM.url('civicrm/contact/view', {cid: cid, reset: 1});
             window.open(url);
+        };
+
+        // Open create new tag window
+        $scope.addNewTag = function () {
+            window.open(CRM.url('civicrm/tag/edit?action=add'));
         };
 
         // Show generic form error alert

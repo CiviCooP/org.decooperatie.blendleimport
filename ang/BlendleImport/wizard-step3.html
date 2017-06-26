@@ -31,7 +31,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="(rowIndex, row) in job_records" class="{{ row.state }}">
+        <tr ng-repeat="(rowIndex, row) in job_records track by row.id" class="{{ row.state }}">
             <td>
                 {{ row.byline }}
                 <!-- <br><em>[debug: {{row.id }} {{ row.contact_id }} {{ row.state }}]</em> -->

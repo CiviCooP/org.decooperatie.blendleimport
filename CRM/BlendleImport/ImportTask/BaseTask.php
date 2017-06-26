@@ -48,7 +48,7 @@ class CRM_BlendleImport_ImportTask_BaseTask {
       'priority' => $priority,
       'message' => $msg,
     ];
-    error_log('DEBUG BlendleImport: ' . $msg);
+    // error_log('DEBUG BlendleImport: ' . $msg);
   }
 
   /**
@@ -86,7 +86,7 @@ class CRM_BlendleImport_ImportTask_BaseTask {
     $records = $this->getRecords();
     $contact_ids = [];
     foreach ($records as $record) {
-      if (!in_array($record->contact_id, $contact_ids)) {
+      if (!empty($record->contact_id) && !in_array($record->contact_id, $contact_ids)) {
         $contact_ids[] = $record->contact_id;
       }
     }

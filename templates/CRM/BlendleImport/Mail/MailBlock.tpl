@@ -20,12 +20,13 @@
     </tr>
    {foreachelse}
     <tr>
-        <td colspan="6">{ts}No articles found!{/ts}</td>
+        <td colspan="7">{ts}No articles found!{/ts}</td>
     </tr>
     {/foreach}
 
     <tr>
         <td colspan="4"><strong>{ts}Total{/ts}</strong></td>
         <td colspan="2" align="right"><strong>&euro; {$data.total_formatted}</strong></td>
+        <td colspan="1">&nbsp;</td>
     </tr>
 </table>

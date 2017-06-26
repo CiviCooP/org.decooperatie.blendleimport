@@ -22,6 +22,34 @@ class CRM_BlendleImport_Import_CSVReader {
   }
 
   /**
+   * Read first row of CSV and store a provisional field mapping.
+   * @param string $data CSV Data
+   * @return array Mapping data
+   */
+  public function parseColumns($data) {
+
+    $data = $this->decodeBase64($data);
+    $headerRow = $this->csvToArray($data, TRUE);
+    $validFields = CRM_BlendleImport_BAO_ImportRecord::fields();
+    $mapping = [];
+
+    foreach($validFields as $recordField) {
+      if(!isset($recordField['mapping_show']) || $recordField['mapping_show'] !== TRUE) {
+        continue;
+      }
+
+      if(in_array($recordField['name'], $headerRow)) {
+        $mapping[$recordField['name']] = $recordField['name'];
+      } else {
+        $mapping[$recordField['name']] = '';
+      }
+    }
+
+    $mappingData = ['mapping' => $mapping, 'columns' => $headerRow];
+    return $mappingData;
+  }
+
+  /**
    * Write data from a CSV file to the import_records table.
    * @param string $data CSV Data
    * @param array $mapping CSV Column Mapping
@@ -30,28 +58,22 @@ class CRM_BlendleImport_Import_CSVReader {
    */
   public function writeToTable($data, $mapping = []) {
 
-    // Decode base64 if necessary
-    if (preg_match('@^data:[^;]*;base64,@', $data, $matches)) {
-      $data = base64_decode(substr($data, strlen($matches[0])), TRUE);
-      if ($data === FALSE) {
-        throw new CRM_BlendleImport_Exception('Could not decode base64 encoded data: ' . htmlspecialchars(substr($data, 0, 20)));
-      }
-    }
-
-    // TODO: Add mapping support to CSV parser
-    // TODO: Allow parsing CSV and finding column headers without storing data
-    if(!empty($mapping)) {
-       // Handle mapping
-    }
-
     // Parse CSV into an array of arrays
     $rows = $this->csvToArray($data);
+    if(!$rows || count($rows) == 0) {
+      return FALSE;
+    }
 
     // Clear existing data and fetch field keys
     CRM_BlendleImport_BAO_ImportRecord::clearRecordsForJob($this->job_id);
     $validFields = CRM_BlendleImport_BAO_ImportRecord::fieldKeys();
     $numericFields = CRM_BlendleImport_BAO_ImportRecord::numericFieldKeys();
     $bylineCache = [];
+
+    $mappedFields = [];
+    if(!empty($mapping) && count($mapping['mapping']) > 0) {
+      $mappedFields = $mapping['mapping'];
+    }
 
     // Walk through CSV and store all rows
     foreach ($rows as $row) {
@@ -67,12 +89,17 @@ class CRM_BlendleImport_Import_CSVReader {
 
       // Set all other fields
       foreach ($row as $fieldName => $value) {
-        if (in_array($fieldName, $validFields)) {
-          if(in_array($fieldName, $numericFields)) {
+        $mappedFieldName = array_search($fieldName, $mappedFields);
+        if(empty($mappedFieldName)) {
+          $mappedFieldName = $fieldName;
+        }
+
+        if (in_array($mappedFieldName, $validFields)) {
+          if(in_array($mappedFieldName, $numericFields)) {
             $value = (float) str_replace(',', '.', $value);
           }
 
-          $record->$fieldName = $value;
+          $record->$mappedFieldName = $value;
         }
       }
 
@@ -89,18 +116,45 @@ class CRM_BlendleImport_Import_CSVReader {
   }
 
   /**
+   * Decode base64 encoded data
+   * @param string $data Data
+   * @return string Data
+   * @throws CRM_BlendleImport_Exception If data invalid
+   */
+  protected function decodeBase64($data) {
+    // Decode base64 if necessary
+    if (preg_match('@^data:[^;]*;base64,@', $data, $matches)) {
+      $data = base64_decode(substr($data, strlen($matches[0])), TRUE);
+      if ($data === FALSE) {
+        throw new CRM_BlendleImport_Exception('Could not decode base64 encoded data: ' . htmlspecialchars(substr($data, 0, 20)));
+      }
+    }
+    return $data;
+  }
+
+  /**
    * Parse a CSV file from string into an array of arrays.
    * @param string $data CSV data
+   * @param bool $onlyHeader Return header row only?
    * @return array Array of arrays
    */
-  protected function csvToArray($data) {
+  protected function csvToArray($data, $onlyHeader = FALSE) {
 
     // Check line endings
     $data = str_replace("\r", "\n", str_replace("\r\n", "\n", $data));
     $data = str_getcsv($data, "\n");
 
+    if(count($data) == 0) {
+      return [];
+    }
+
     // Try to detect delimiter
     $delimiter = $this->detectCsvDelimiter($data);
+
+    // Return header only?
+    if($onlyHeader) {
+      return str_getcsv($data[0], $delimiter);
+    }
 
     // Parse CSV file rows
     $csv_rows = array_map(function ($line) use ($delimiter) {

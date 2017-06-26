@@ -13,11 +13,11 @@
             <td class="label"><label for="csv-upload">{{ts('CSV file')}}<span class="crm-marker">*</span></label>
             </td>
             <td>
-                                <span class="data-present" ng-show="job.record_count > 0">
-                                    <span crm-icon="fa-check-circle"></span> {{ts('Data uploaded')}} ({{job.record_count}} {{ts('records')}})<br>
-                                </span>
-                <input crm-filereader ng-model="job.csv_upload" type="file" id="csv-upload" name="csv-upload" accept=".csv" />
-                <br><span class="description">{{ts('Upload a new CSV export file from Blendle here. (Use UTF-8, keep column names intact.)')}}</span>
+                <span class="data-present" ng-show="job.data_present">
+                    <span crm-icon="fa-check-circle"></span> {{ts('Data uploaded')}} ({{job.record_count > 0 ? job.record_count + ' ' + ts('records') : ts('not parsed yet')}})<br>
+                </span>
+                <input crm-filereader ng-model="job.data" type="file" id="csv-upload" name="csv-upload" accept=".csv" />
+                <br><span class="description">{{ts('Upload a new CSV export file from Blendle here. (Use UTF-8.)')}}</span>
             </td>
         </tr>
         <tr>
@@ -56,6 +56,7 @@
             <td class="label">
                 <label for="job-add-tag">{{ts('Add Tag?')}}</label>
                 <a class="clear-link" ng-show="job.add_tag!=null" ng-click="job.add_tag=null" title="{{ts('Clear Tag')}}">{{ts('clear')}}</a>
+                <a class="add-new-link" ng-show="job.add_tag==null" ng-click="addNewTag()" title="{{ts('Create New Tag')}}">{{ts('new')}}</a>
             </td>
             <td><input crm-entityref="{entity:'Tag', select:{allowClear:true}}" id="job-add-tag"
                        ng-model="job.add_tag"/>

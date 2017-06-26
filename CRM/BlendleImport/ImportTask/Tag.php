@@ -22,14 +22,17 @@ class CRM_BlendleImport_ImportTask_Tag extends CRM_BlendleImport_ImportTask_Base
     }
 
     $contactIds = $this->getContactIdsWithoutTag();
+    $this->log('Tag: will add tag for ' . count($contactIds) . ' contacts.');
+
     foreach($contactIds as $contactId) {
-      $ret = civicrm_api3('EntityTag', 'create', [
-        'entity_table' => 'civicrm_contact',
-        'entity_id' => $contactId,
-        'tag_id' => $this->job->add_tag,
-      ]);
-      if($ret['is_error']) {
-        $this->log('ERROR: Tag could not be added for contact id ' . $contactId . ': ' . $ret['error_message'], PEAR_LOG_ERR);
+      try {
+        $ret = civicrm_api3('EntityTag', 'create', [
+          'entity_table' => 'civicrm_contact',
+          'entity_id'    => $contactId,
+          'tag_id'       => $this->job->add_tag,
+        ]);
+      } catch(\Exception $e) {
+        $this->log('ERROR: Tag could not be added for contact id ' . $contactId . ': ' . $e->getMessage(), PEAR_LOG_ERR);
         continue;
       }
       $this->log('Tag: added ' . $ret['added'] . ', cid ' . $contactId . '.');

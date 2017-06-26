@@ -12,7 +12,7 @@
  * @return array API result descriptor
  * @see civicrm_api3_create_success
  * @see civicrm_api3_create_error
- * @throws API_Exception
+ * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_blendle_import_job_get($params) {
   $returnValues = CRM_BlendleImport_BAO_ImportJob::getJobs($params, TRUE);

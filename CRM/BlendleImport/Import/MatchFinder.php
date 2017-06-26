@@ -62,14 +62,25 @@ class CRM_BlendleImport_Import_MatchFinder {
       return TRUE;
     }
 
-    // 3. Try to find contact(s) by %last name% only
+    // 3. Try to find contacts by %first word of first name% AND %last word of last name% with wildcard
+    if (preg_match('/^([^ ]+)/', $names['first'], $fMatches)) {
+      if (preg_match('/([^ ]+)$/', $names['last'], $lMatches)) {
+        $result = $this->findContacts($lMatches[1], $fMatches[1], TRUE);
+        if ($result) {
+          $this->storeResult($result, $record, 'Partial first and last name');
+          return TRUE;
+        }
+      }
+    }
+
+    // 4. Try to find contact(s) by %last name% only
     $result = $this->findContacts($names['last'], NULL, TRUE);
     if ($result) {
       $this->storeResult($result, $record, 'Last name with wildcard');
       return TRUE;
     }
 
-    // 4. Try to find contact(s) by %last word of last name% only
+    // 5. Try to find contact(s) by %last word of last name% only
     if (preg_match('/([^ ]+) (.+)/', $names['last'], $matches)) {
       $result = $this->findContacts($matches[2], NULL, TRUE);
       if ($result) {

@@ -1,19 +1,21 @@
-<div class="import-help-new" ng-show="!job.id">
+<div class="import-help-new">
     <h2>{{ts('Match Columns')}}</h2>
+
+    <p>{{ts('Choose a column from the CSV file for each field that you want to import.')}}<br/>
+        {{ts('Fields marked with * are required and must be mapped to a column before you continue.')}}</p>
 </div>
 
-<!--
-New step - we should:
-- Add two database columns to importjob (data + mapping as serialized array)
-- Store the CSV data temporarily after step 1 instead of trying to parse it immediately
-- Show a list of columns + allow mapping them to database columns
-- Store the mapping after step 2
-- Try and load the file into the record table based on mapping data and show any errors
-- Continue to step 3
-(And: improve tag processing + other minor fixes)
--->
-
 <div class="crm-block crm-form-block">
+    <table class="form-layout-compressed">
+        <tr ng-repeat="(fIndex, field) in job_fields" class="crm-matchcolumn">
+            <td class="label"><label for="job_field_{{fIndex}}">{{field.title}}
+                <span ng-if="field.required" class="is-required">*</span></label></td>
+            <td><select id="job_field_{{fIndex}}" ng-model="field.mapping">
+                <option value=""></option>
+                <option ng-repeat="option in field.mappingOptions" ng-value="option">{{option}}</option>
+            </select></td>
+        </tr>
+    </table>
 
     <div class="crm-ui-custom-buttons">
         <button crm-icon="fa-caret-right fa-lg" title="{{ts('Save and Continue')}}" ng-click="submitStep2()">{{ts('Save & Continue')}}</button>

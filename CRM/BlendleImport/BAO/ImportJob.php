@@ -61,6 +61,7 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
    * @param array $params key-value pairs
    * @param bool $returnObject Return full created object?
    * @return static|mixed Create result
+   * @throws CRM_BlendleImport_Exception If CSV data has been uploaded and cannot be parsed
    */
   public static function create($params, $returnObject = FALSE) {
     $instance = new static;
@@ -75,24 +76,22 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
       $params['created_id'] = CRM_Core_Session::getLoggedInContactID();
     }
 
+    if(!empty($params['mapping'])) {
+      $params['mapping'] = serialize($params['mapping']);
+    }
+
+    if(!empty($params['data'])) {
+      if (preg_match('@^data:[^;]*;base64,@', $params['data'], $matches)) {
+        $params['data'] = base64_decode(substr($params['data'], strlen($matches[0])), TRUE);
+        if ($params['data'] === FALSE) {
+          throw new CRM_BlendleImport_Exception('Could not decode base64 encoded data: ' . htmlspecialchars(substr($params['data'], 0, 20)));
+        }
+      }
+      $params['mapping'] = '';
+    }
+
     $instance->copyValues($params);
     $instance->save();
-
-    // Handle CSV upload if csv_upload contains data (= base64 encoded CSV)
-    if (!empty($params['csv_upload'])) {
-      $instance->data = $params['csv_upload'];
-      $instance->setStatus(static::STATUS_PARSEFILE);
-      $instance->save();
-    }
-
-    // If mapping contains data, store mapping and try to parse CSV and match records
-    if (!empty($params['mapping'])) {
-      $instance->mapping = $params['mapping'];
-      $instance->parseCSVData();
-      $instance->setStatus(static::STATUS_CONTACTS);
-      $instance->save();
-      $instance->matchRecords();
-    }
 
     CRM_Utils_Hook::post($hook, get_class($instance), $instance->id, $instance);
 
@@ -110,7 +109,7 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
    * @throws CRM_BlendleImport_Exception If status ID is invalid
    */
   public function setStatus($status_id) {
-    if (!in_array($status_id, [self::STATUS_NEW, self::STATUS_CONTACTS, self::STATUS_ACTIVITIES, self::STATUS_TAGSMEMB, self::STATUS_PAYMENTS, self::STATUS_COMPLETE])) {
+    if (!in_array($status_id, [self::STATUS_NEW, self::STATUS_PARSEFILE, self::STATUS_CONTACTS, self::STATUS_ACTIVITIES, self::STATUS_TAGSMEMB, self::STATUS_PAYMENTS, self::STATUS_COMPLETE])) {
       throw new CRM_BlendleImport_Exception('Invalid value for civicrm_blendleimport_job.status: ' . $status_id . '.');
     }
 
@@ -159,16 +158,110 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
   }
 
   /**
-   * Parse CSV data in $this->data based on the column mapping in $this->mapping.
-   * This does not save the object - call save() manually!
+   * Read CSV file from $this->data and try to fetch and match column headers.
+   * If successful, set the job's status to STATUS_PARSEFILE.
+   * @param bool $alwaysReload Always reload, even if $this->mapping is not empty
    * @return bool Success
+   * @throws CRM_BlendleImport_Exception If no data or column header found
    */
-  public function parseCSVData() {
+  public function parseCSVColumns($alwaysReload = FALSE) {
+    if(!empty($this->mapping) && $alwaysReload === FALSE) {
+      return FALSE;
+    }
+
     $csvfile = new CRM_BlendleImport_Import_CSVReader($this->id);
-    return $csvfile->writeToTable($this->data, $this->mapping);
+    $ret = $csvfile->parseColumns($this->data);
+
+    if (!$ret) {
+      throw new CRM_BlendleImport_Exception('Cannot process CSV columns: resulting mapping is empty.');
+    }
+
+    $this->setMapping($ret['mapping'], $ret['columns']);
+    $this->setStatus(static::STATUS_PARSEFILE);
+    $this->save();
+    return TRUE;
   }
 
   /**
+   * Return an array of mappable fields + name + title + currently selected CSV column header.
+   * @return array
+   * @throws CRM_BlendleImport_Exception If called before parseCSVColumns()
+   */
+  public function getMappingData() {
+    if(empty($this->mapping) || !($mapping = $this->getMapping())) {
+      throw new CRM_BlendleImport_Exception('Cannot return mapping data: mapping field is empty.');
+    }
+
+    $validFields = CRM_BlendleImport_BAO_ImportRecord::fields();
+    $ret = [];
+
+    foreach($mapping['mapping'] as $mFieldName => $mCSVColumnName) {
+      $ret[] = [
+        'name' => $validFields[$mFieldName]['name'],
+        'title' => $validFields[$mFieldName]['title'],
+        'required' => ($validFields[$mFieldName]['mapping_required'] ? TRUE : FALSE),
+        'mapping' => $mCSVColumnName,
+        'mappingOptions' => $mapping['columns'],
+      ];
+    }
+
+    return $ret;
+  }
+
+  /**
+   * Parse CSV data in $this->data based on the column mapping in $this->mapping.
+   * If succesful, set the job's status to STATUS_CONTACTS and try to match contacts.
+   * @return bool Success
+   * @throws CRM_BlendleImport_Exception If field mapping or data string empty
+   */
+  public function parseCSVData() {
+    $mapping = $this->getMapping();
+    if(empty($mapping) || count($mapping) == 0) {
+      throw new CRM_BlendleImport_Exception('Cannot process CSV data: incomplete or empty field mapping.');
+    }
+    if(empty($this->data)) {
+      throw new CRM_BlendleImport_Exception('Cannot process CSV data: data field is empty.');
+    }
+
+    $csvfile = new CRM_BlendleImport_Import_CSVReader($this->id);
+    $ret = $csvfile->writeToTable($this->data, $mapping);
+    if(!$ret) {
+      throw new CRM_BlendleImport_Exception('Cannot process CSV data: data could not be parsed as CSV.');
+    }
+
+    $this->setStatus(static::STATUS_CONTACTS);
+    $this->save();
+    $this->matchRecords();
+    return TRUE;
+  }
+
+  /**
+   * Get current mapping data as an array.
+   * @return array Mapping data
+   */
+  public function getMapping() {
+    $mapping = unserialize($this->mapping);
+    if(empty($mapping)) {
+      $mapping = [];
+    }
+    return $mapping;
+  }
+
+  /**
+   * Set mapping data from an array, keeping column headers intact if they are not supplied.
+   * @param array $newMapping Mapping data
+   * @param array|null $newColumns Column headers
+   */
+  public function setMapping($newMapping, $newColumns = null) {
+    $mapping = $this->getMapping();
+    $mapping['mapping'] = $newMapping;
+    if(!empty($newColumns)) {
+      $mapping['columns'] = $newColumns;
+    }
+    $this->mapping = serialize($mapping);
+  }
+
+    /**
    * Get records for this import job.
    * @param bool $unique Return unique contacts?
    * @param string $returnFormat Whether to return 'object', 'array' or 'count'.
@@ -288,6 +381,9 @@ class CRM_BlendleImport_BAO_ImportJob extends CRM_BlendleImport_DAO_ImportJob {
   public static function recordToArray(&$record) {
     $row = [];
     CRM_Core_DAO::storeValues($record, $row);
+    $row['data_present'] = (!empty($row['data']));
+    unset($row['data']);
+    unset($row['mapping']);
     $row['record_count'] = $record->getRecordCount();
     return $row;
   }

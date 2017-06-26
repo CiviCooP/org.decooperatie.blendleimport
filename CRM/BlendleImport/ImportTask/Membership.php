@@ -22,17 +22,18 @@ class CRM_BlendleImport_ImportTask_Membership extends CRM_BlendleImport_ImportTa
     }
 
     $contactIds = $this->getContactIdsWithoutMembership();
+    $this->log('Membership: will create membership for ' . count($contactIds) . ' contacts.');
+
     foreach($contactIds as $contactId) {
-
-      // Default membership start date etc should be fine, join date is set from import date
-      $ret = civicrm_api3('Membership', 'create', [
-        'contact_id' => $contactId,
-        'membership_type_id' => $this->job->add_membership_type,
-        'join_date' => $this->job->import_date,
-      ]);
-
-      if($ret['is_error']) {
-        $this->log('ERROR: Membership could not be created for contact id ' . $contactId . ': ' . $ret['error_message'], PEAR_LOG_ERR);
+      try {
+        // Default membership start date etc should be fine, join date is set from import date
+        $ret = civicrm_api3('Membership', 'create', [
+          'contact_id'         => $contactId,
+          'membership_type_id' => $this->job->add_membership_type,
+          'join_date'          => $this->job->import_date,
+        ]);
+      } catch (\Exception $e) {
+        $this->log('ERROR: Membership could not be created for contact id ' . $contactId . ': ' . $e->getMessage(), PEAR_LOG_ERR);
         continue;
       }
       $this->log('Membership: created, id ' . $ret['id'] . ', cid ' . $contactId . '.');

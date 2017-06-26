@@ -37,6 +37,19 @@
                     });
             },
 
+            updateMappingAndLoadData: function updateMapping(jobId, mappingData) {
+                // Update field mapping information and parse CSV file
+                return qApi('BlendleImportJob', 'fileload', {
+                    id: jobId,
+                    mapping: mappingData
+                }).then(function (apiResult) {
+                    if (!apiResult || apiResult.is_error || !apiResult.values) {
+                        return false;
+                    }
+                    return apiResult;
+                });
+            },
+
             getRecords: function getRecords(jobId) {
                 // Get all unique BlendleImportRecords for a job ID
                 return qApi('BlendleImportRecord', 'get',
@@ -98,6 +111,7 @@
 
             runImport: function runImport(jobId, task) {
                 // Run an actual import task!
+                // window.console.log("Running import task " + jobId + " " + task);
                 return qApi('BlendleImportJob', 'import', {id: jobId, task: task}).then(function (apiResult) {
                     return apiResult;
                 });
