@@ -38,16 +38,12 @@ class CRM_BlendleImport_Import_MatchFinder {
     $names = self::cleanupName($record->byline, $record->title);
 
     // Store updated name with button / publication rules applied to show in listing
-    if($names === FALSE) {
-        $names = '[Onbekend!]';
-    } else {
-        $record->byline = implode(' ', $names);
-    }
-
-    // No name at all?
-    if (empty($names)) {
+    if($names === FALSE || empty($names)) {
+      $record->byline = '[Onbekend!]';
       $this->storeResult([], $record, 'Name field empty');
       return FALSE;
+    } else {
+      $record->byline = implode(' ', $names);
     }
 
     // Clean up voorvoegsels / middle names for matching

@@ -34,6 +34,7 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       c.id AS contact_id, 
       c.sort_name AS contact_sort_name,
       e.email AS contact_email,
+      coad.ro_wordpress_id_44 AS ro_wordpress_id,
       abl.import_job_id_55 AS import_job_id, 
       coj.id AS contribution_id,
       coj.contribution_subject AS contribution_subject,
@@ -44,6 +45,7 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       a.id AS activity_id,
       a.activity_date_time AS activity_date, 
       abl.product_uid_56 AS activity_product_uid,
+      abl.author_77 AS activity_author,
       abl.article_title_57 AS activity_article_title,
       abl.sales_count_58 AS activity_sales_count,
       abl.premium_reads_59 AS activity_premium_reads,
@@ -63,6 +65,7 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       LEFT JOIN civicrm_activity_contact ac ON a.id = ac.activity_id AND ac.record_type_id = 3
       LEFT JOIN civicrm_contact c ON ac.contact_id = c.id
       LEFT JOIN civicrm_email e ON c.id = e.contact_id AND e.is_primary = 1
+      LEFT JOIN civicrm_value_administrative_data_10 coad ON c.id = coad.entity_id
       LEFT JOIN (
         SELECT co.id, co.contact_id, co.total_amount, co.fee_amount, co.net_amount, co.receive_date, cobl.import_job_id_68, coac.subject AS contribution_subject
         FROM civicrm_contribution co
@@ -92,21 +95,23 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
   public function postProcess() {
 
     $this->_columnHeaders = [
-      'contact_id'                => ['title' => ts('Contact ID'), 'type' => CRM_Report_Form::OP_INT],
-      'contact_sort_name'         => ['title' => ts('Contact Name'), 'type' => CRM_Report_Form::OP_STRING],
-      'contact_email'             => ['title' => ts('Email'), 'type' => CRM_Report_Form::OP_STRING],
-      'contribution_id'           => ['title' => ts('Contribution ID'), 'type' => CRM_Report_Form::OP_INT],
-      'contribution_subject'      => ['title' => ts('Contribution'), 'type' => CRM_Report_Form::OP_STRING],
-      'contribution_total_amount' => ['title' => ts('Total Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
-      'contribution_receive_date' => ['title' => ts('Date'), 'type' => CRM_Report_Form::OP_DATE],
-      'activity_id'               => ['title' => ts('Activity ID'), 'type' => CRM_Report_Form::OP_INT],
-      'activity_article_title'    => ['title' => ts('Article Title'), 'type' => CRM_Report_Form::OP_STRING],
-      'activity_sales_count'      => ['title' => ts('Sales Count'), 'type' => CRM_Report_Form::OP_INT],
-      'activity_premium_reads'    => ['title' => ts('Premium Reads'), 'type' => CRM_Report_Form::OP_INT],
-      'activity_refunded_amount'  => ['title' => ts('Refunded Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
-      'activity_vmoney_amount'    => ['title' => ts('Vmoney Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
-      'activity_revenue'          => ['title' => ts('Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
-      'activity_fb_costs'         => ['title' => ts('Campaign Costs'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'contact_id'                => ['title' => ts('Contact ID'), 'type' => CRM_Report_Form::OP_INT],
+        'contact_sort_name'         => ['title' => ts('Contact Name'), 'type' => CRM_Report_Form::OP_STRING],
+        'contact_email'             => ['title' => ts('Email'), 'type' => CRM_Report_Form::OP_STRING],
+        'ro_wordpress_id'           => ['title' => ts('RO WPID'), 'type' => CRM_Report_Form::OP_STRING],
+        'contribution_id'           => ['title' => ts('Contribution ID'), 'type' => CRM_Report_Form::OP_INT],
+        'contribution_subject'      => ['title' => ts('Contribution'), 'type' => CRM_Report_Form::OP_STRING],
+        'contribution_total_amount' => ['title' => ts('Total Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'contribution_receive_date' => ['title' => ts('Date'), 'type' => CRM_Report_Form::OP_DATE],
+        'activity_id'               => ['title' => ts('Activity ID'), 'type' => CRM_Report_Form::OP_INT],
+        'activity_author'           => ['title' => ts('Author'), 'type' => CRM_Report_Form::OP_STRING],
+        'activity_article_title'    => ['title' => ts('Article Title'), 'type' => CRM_Report_Form::OP_STRING],
+        'activity_sales_count'      => ['title' => ts('Sales Count'), 'type' => CRM_Report_Form::OP_INT],
+        'activity_premium_reads'    => ['title' => ts('Premium Reads'), 'type' => CRM_Report_Form::OP_INT],
+        'activity_refunded_amount'  => ['title' => ts('Refunded Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'activity_vmoney_amount'    => ['title' => ts('Vmoney Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'activity_revenue'          => ['title' => ts('Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'activity_fb_costs'         => ['title' => ts('Campaign Costs'), 'type' => CRM_Report_Form::OP_FLOAT],
     ];
 
     parent::postProcess();
@@ -125,7 +130,7 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       $prevContributionId = $row['contribution_id'];
 
       foreach ($row as $colName => $colVal) {
-        if ($hideContactColumn && in_array($colName, ['contact_id', 'contact_sort_name', 'contact_email'])) {
+        if ($hideContactColumn && in_array($colName, ['contact_id', 'contact_sort_name','contact_email','ro_wordpress_id'])) {
           unset($rows[$rowNum][$colName]);
         }
 
@@ -137,6 +142,10 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       if (!empty($row['contact_sort_name'])) {
         $row['contact_sort_name_link'] = CRM_Utils_System::url('civicrm/contact/view', 'reset=1&cid=' . $row['contact_id'], $this->_absoluteUrl);
         $row['contact_sort_name_hover'] = ts('View Contact');
+      }
+      if (!empty($row['contact_email'])) {
+        $row['contact_email_link'] = 'mailto:' . $row['contact_email'];
+        $row['contact_email_hover'] = ts('Email Contact');
       }
       if (!empty($row['contribution_subject'])) {
         $row['contribution_subject_link'] = CRM_Utils_System::url('civicrm/contact/view/contribution', 'action=view&reset=1&cid=' . $row['contact_id'] . '&id=' . $row['contribution_id'], $this->_absoluteUrl);
@@ -154,8 +163,8 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
 
     if($this->_outputMode != 'csv') {
       unset($this->_columnHeaders['contact_id']);
-      unset($this->_columnHeaders['contact_email']);
     }
+
     unset($this->_columnHeaders['contribution_id']);
     unset($this->_columnHeaders['activity_id']);
   }

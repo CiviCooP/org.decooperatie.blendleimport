@@ -89,7 +89,7 @@ class CRM_BlendleImport_Import_CSVReader {
       $record->parent = NULL;
       if (!empty($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
         $record->parent = $bylineCache[$row['byline']];
-          error_log("Byline is '{$row['byline']}, seen before, id {$record->parent}.");
+        // error_log("Byline is '{$row['byline']}, seen before, id {$record->parent}.");
       }
 
       // Set all other fields
@@ -112,7 +112,7 @@ class CRM_BlendleImport_Import_CSVReader {
 
       if ($record->parent == NULL) {
         $bylineCache[$row['byline']] = $record->id;
-          error_log("Byline is '{$row['byline']}, not seen before, adding to cache.");
+        // error_log("Byline is '{$row['byline']}, not seen before, adding to cache.");
       }
       unset($record);
     }

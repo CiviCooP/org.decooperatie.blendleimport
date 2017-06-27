@@ -60,7 +60,7 @@ class CRM_BlendleImport_Tokens {
         WHERE cobl.import_job_id_68 = %1
         ", [1 => [$jobId, 'Integer']]);
           $activities = CRM_Core_DAO::executeQuery("
-          SELECT abl.import_job_id_55 AS import_job_id, a.id AS activity_id, ac.contact_id AS contact_id, a.activity_date_time AS activity_date, abl.product_uid_56 AS activity_product_uid, abl.article_title_57 AS activity_article_title, abl.sales_count_58 AS activity_sales_count, abl.premium_reads_59 AS activity_premium_reads, abl.refunded_count_60 AS activity_refunded_count, abl.refunded_amount_61 AS activity_refunded_amount, abl.vmoney_amount_62 AS activity_vmoney_amount, abl.sales_amount_63 AS activity_sales_amount, abl.revenue_64 AS activity_revenue, abl.price_65 AS activity_article_price, abl.fbcosts_68 AS activity_fb_costs
+          SELECT abl.import_job_id_55 AS import_job_id, a.id AS activity_id, ac.contact_id AS contact_id, a.activity_date_time AS activity_date, abl.product_uid_56 AS activity_product_uid, abl.article_title_57 AS activity_article_title, abl.author_77 AS activity_author, abl.sales_count_58 AS activity_sales_count, abl.premium_reads_59 AS activity_premium_reads, abl.refunded_count_60 AS activity_refunded_count, abl.refunded_amount_61 AS activity_refunded_amount, abl.vmoney_amount_62 AS activity_vmoney_amount, abl.sales_amount_63 AS activity_sales_amount, abl.revenue_64 AS activity_revenue, abl.price_65 AS activity_article_price, abl.fbcosts_68 AS activity_fb_costs
           FROM civicrm_value_blendle_import_11 abl
       LEFT JOIN civicrm_activity a ON abl.entity_id = a.id
       LEFT JOIN civicrm_activity_contact ac ON a.id = ac.activity_id AND ac.record_type_id = 3

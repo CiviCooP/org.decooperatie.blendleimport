@@ -41,6 +41,7 @@ class CRM_BlendleImport_ImportTask_Activity extends CRM_BlendleImport_ImportTask
         $apiFieldName('Import_Job_ID') => $record->job_id,
         $apiFieldName('Product_UID') => $record->product_uid,
         $apiFieldName('Article_Title') => $record->title,
+        $apiFieldName('Author') => $record->byline,
         $apiFieldName('Sales_Count') => (int)$record->sales_count,
         $apiFieldName('Premium_Reads') => (int)$record->premium_reads,
         $apiFieldName('Refunded_Count') => (int)$record->refunded_count,
