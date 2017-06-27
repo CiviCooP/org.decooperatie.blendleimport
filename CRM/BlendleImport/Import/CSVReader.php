@@ -81,10 +81,15 @@ class CRM_BlendleImport_Import_CSVReader {
       $record = new CRM_BlendleImport_BAO_ImportRecord;
       $record->job_id = $this->job_id;
 
+      // First name clean up round (try to get author names from title if necessary)
+      $names = CRM_BlendleImport_Import_MatchFinder::cleanupName($row['byline'], $row['title']);
+      $row['byline'] = implode(' ', $names);
+
       // Check and set parent based on byline (cache)
       $record->parent = NULL;
-      if (isset($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
+      if (!empty($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
         $record->parent = $bylineCache[$row['byline']];
+          error_log("Byline is '{$row['byline']}, seen before, id {$record->parent}.");
       }
 
       // Set all other fields
@@ -107,6 +112,7 @@ class CRM_BlendleImport_Import_CSVReader {
 
       if ($record->parent == NULL) {
         $bylineCache[$row['byline']] = $record->id;
+          error_log("Byline is '{$row['byline']}, not seen before, adding to cache.");
       }
       unset($record);
     }

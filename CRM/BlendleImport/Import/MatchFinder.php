@@ -34,10 +34,15 @@ class CRM_BlendleImport_Import_MatchFinder {
    */
   public function match(CRM_BlendleImport_BAO_ImportRecord &$record) {
 
+    // Parse names (cleanup is now also executed while importing CSV, but we still need to parse first/last name)
     $names = self::cleanupName($record->byline, $record->title);
 
     // Store updated name with button / publication rules applied to show in listing
-    $record->byline = implode(' ', $names);
+    if($names === FALSE) {
+        $names = '[Onbekend!]';
+    } else {
+        $record->byline = implode(' ', $names);
+    }
 
     // No name at all?
     if (empty($names)) {
@@ -65,6 +70,7 @@ class CRM_BlendleImport_Import_MatchFinder {
     // 3. Try to find contacts by %first word of first name% AND %last word of last name% with wildcard
     if (preg_match('/^([^ ]+)/', $names['first'], $fMatches)) {
       if (preg_match('/([^ ]+)$/', $names['last'], $lMatches)) {
+        // error_log("Checking matches for partial first and last name: 1 {$names['first']} 2 {$names['last']} 3 {$lMatches[1]} 4 {$fMatches[1]}.");
         $result = $this->findContacts($lMatches[1], $fMatches[1], TRUE);
         if ($result) {
           $this->storeResult($result, $record, 'Partial first and last name');
@@ -149,6 +155,9 @@ class CRM_BlendleImport_Import_MatchFinder {
    * @return array|bool Results, or false if nothing found
    */
   protected function findContacts($lastName, $firstName = NULL, $useLike = FALSE) {
+    $lastName = substr($lastName, 0, 63);
+    $firstName = substr($firstName, -63);
+
     if ($useLike) {
       if (!empty($lastName)) {
         $lastName = ['LIKE' => '%' . $lastName];
@@ -158,6 +167,7 @@ class CRM_BlendleImport_Import_MatchFinder {
       }
     }
 
+    // error_log('Trying to match: ' . print_r($lastName, true) . ' - ' . print_r($firstName, true));
     $result = civicrm_api3('Contact', 'get', [
       'sequential' => 1,
       'is_deleted' => 0,

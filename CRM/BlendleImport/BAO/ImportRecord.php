@@ -95,9 +95,6 @@ class CRM_BlendleImport_BAO_ImportRecord extends CRM_BlendleImport_DAO_ImportRec
       $params['contact_id'] = NULL;
     }
 
-    // Handle server side state change if updating, similar to CsvImportHelper?
-    // Not currently implemented since it sort of works as-is... TODO refactor this function?
-
     // Update this row
     if (!empty($params['resolution']) && is_array($params['resolution'])) {
       $params['resolution'] = serialize($params['resolution']);
