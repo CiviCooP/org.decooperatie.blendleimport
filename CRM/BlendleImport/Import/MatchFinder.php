@@ -46,7 +46,7 @@ class CRM_BlendleImport_Import_MatchFinder {
     }
 
     // Clean up voorvoegsels / middle names for matching
-    $names['last'] = str_replace(['van ', 'de ', '\'t ', 't ', 'v ', 'en '], '', $names['last']);
+    $names['last'] = str_replace(['van ', 'de ', 'der ', 'den ', 'te ', '\'t ', 't ', 'v ', 'en '], '', $names['last']);
 
     // 1. Try to find contact by full literal first and last name
     $result = $this->findContacts($names['last'], $names['first']);
@@ -115,10 +115,12 @@ class CRM_BlendleImport_Import_MatchFinder {
       return FALSE;
     }
 
-    // Remove /Publication part from names
+    // Remove /Publication part and 'Tekst: ' from names and replace underscores
     if (preg_match('/^([^\/]+)\/(.*)$/', $names, $matches)) {
       $names = $matches[1];
     }
+    $names = str_ireplace('Tekst: ', '', $names);
+    $names = preg_replace('/_+/', ' ', $names);
 
     // Check for name format: Last, First - otherwise assume First Last [Last Last]
     if (preg_match('/^([^,]+)\s*,\s*([^,]+)$/', $names, $matches)) {
