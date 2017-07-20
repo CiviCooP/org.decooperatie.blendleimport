@@ -56,14 +56,21 @@ class CRM_BlendleImport_Import_MatchFinder {
       return TRUE;
     }
 
-    // 2. Try to find contact(s) by literal last name only
+    // 2. Try to find contact(s) by full first and last name with wildcard
+    $result = $this->findContacts($names['last'], $names['first'], TRUE);
+    if ($result) {
+      $this->storeResult($result, $record, 'First and last name with wildcard');
+      return TRUE;
+    }
+
+    // 3. Try to find contact(s) by literal last name only
     $result = $this->findContacts($names['last'], NULL);
     if ($result) {
       $this->storeResult($result, $record, 'Last name');
       return TRUE;
     }
 
-    // 3. Try to find contacts by %first word of first name% AND %last word of last name% with wildcard
+    // 4. Try to find contacts by %first word of first name% AND %last word of last name% with wildcard
     if (preg_match('/^([^ ]+)/', $names['first'], $fMatches)) {
       if (preg_match('/([^ ]+)$/', $names['last'], $lMatches)) {
         // error_log("Checking matches for partial first and last name: 1 {$names['first']} 2 {$names['last']} 3 {$lMatches[1]} 4 {$fMatches[1]}.");
@@ -75,14 +82,14 @@ class CRM_BlendleImport_Import_MatchFinder {
       }
     }
 
-    // 4. Try to find contact(s) by %last name% only
+    // 5. Try to find contact(s) by %last name% only
     $result = $this->findContacts($names['last'], NULL, TRUE);
     if ($result) {
       $this->storeResult($result, $record, 'Last name with wildcard');
       return TRUE;
     }
 
-    // 5. Try to find contact(s) by %last word of last name% only
+    // 6. Try to find contact(s) by %last word of last name% only
     if (preg_match('/([^ ]+) (.+)/', $names['last'], $matches)) {
       $result = $this->findContacts($matches[2], NULL, TRUE);
       if ($result) {
@@ -126,7 +133,7 @@ class CRM_BlendleImport_Import_MatchFinder {
 
     // Check for name format: Last, First - otherwise assume First Last [Last Last]
     if (preg_match('/^([^,]+)\s*,\s*([^,]+)$/', $names, $matches)) {
-      $lastName = $matches[1];
+      $lastName = trim($matches[1]);
       $firstName = trim($matches[2]);
     } else {
       $splitNames = preg_split('/\s+/', $names);
