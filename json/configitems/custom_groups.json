@@ -211,6 +211,36 @@
         "is_view": "0",
         "text_length": "255",
         "column_name": "fbcosts_68"
+      },
+      {
+        "custom_group_id": "11",
+        "name": "Premium_Revenue",
+        "label": "Premium Revenue",
+        "data_type": "Money",
+        "html_type": "Text",
+        "is_required": "0",
+        "is_searchable": "0",
+        "is_search_range": "0",
+        "weight": "14",
+        "is_active": "1",
+        "is_view": "0",
+        "text_length": "255",
+        "column_name": "premium_revenue_79"
+      },
+      {
+        "custom_group_id": "11",
+        "name": "Matching_Revenue",
+        "label": "Matching Revenue",
+        "data_type": "Money",
+        "html_type": "Text",
+        "is_required": "0",
+        "is_searchable": "0",
+        "is_search_range": "0",
+        "weight": "15",
+        "is_active": "1",
+        "is_view": "0",
+        "text_length": "255",
+        "column_name": "matching_revenue_80"
       }
     ]
   },

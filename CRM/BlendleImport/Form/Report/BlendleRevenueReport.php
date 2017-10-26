@@ -55,7 +55,9 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       abl.sales_amount_63 AS activity_sales_amount,
       abl.revenue_64 AS activity_revenue,
       abl.price_65 AS activity_article_price,
-      abl.fbcosts_68 AS activity_fb_costs
+      abl.fbcosts_68 AS activity_fb_costs,
+      abl.premium_revenue_79 AS activity_premium_revenue,
+      abl.matching_revenue_80 AS activity_matching_revenue
       ";
   }
 
@@ -93,7 +95,6 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
   }
 
   public function postProcess() {
-
     $this->_columnHeaders = [
         'contact_id'                => ['title' => ts('Contact ID'), 'type' => CRM_Report_Form::OP_INT],
         'contact_sort_name'         => ['title' => ts('Contact Name'), 'type' => CRM_Report_Form::OP_STRING],
@@ -112,6 +113,8 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
         'activity_vmoney_amount'    => ['title' => ts('Vmoney Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
         'activity_revenue'          => ['title' => ts('Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
         'activity_fb_costs'         => ['title' => ts('Campaign Costs'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'activity_premium_revenue'  => ['title' => ts('Premium Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
+        'activity_matching_revenue' => ['title' => ts('Matching'), 'type' => CRM_Report_Form::OP_FLOAT],
     ];
 
     parent::postProcess();

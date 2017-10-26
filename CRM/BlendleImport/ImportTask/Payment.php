@@ -44,13 +44,17 @@ class CRM_BlendleImport_ImportTask_Payment extends CRM_BlendleImport_ImportTask_
         continue;
       }
 
-      // Calculate total revenue (= activity revenue amount minus campaign costs)
+      // Calculate total revenue (= activity revenue amount minus campaign costs plus premium/matching revenue)
       $revenueFieldId = $cf->getApiFieldName('Blendle_Import', 'Revenue_Amount');
       $campaignCostsFieldId = $cf->getApiFieldName('Blendle_Import', 'FB_Costs');
+      $premiumRevenueFieldId = $cf->getApiFieldName('Blendle_Import', 'Premium_Revenue');
+      $matchingRevenueFieldId = $cf->getApiFieldName('Blendle_Import', 'Matching_Revenue');
       $revenue = 0;
       foreach($activities as $activity) {
           $revenue += (double)$activity[$revenueFieldId];
           $revenue -= (double)$activity[$campaignCostsFieldId];
+          $revenue += (double)$activity[$premiumRevenueFieldId];
+          $revenue += (double)$activity[$matchingRevenueFieldId];
       }
 
       // Create contribution

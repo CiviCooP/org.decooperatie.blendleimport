@@ -23,6 +23,8 @@
  * @property float $approximated_sales_amount_eur
  * @property float $approximated_revenue_eur
  * @property float $fb_costs
+ * @property float $premium_revenue
+ * @property float $matching_revenue
  * @property float $price
  * @property int $parent
  * @property string $state
@@ -151,11 +153,23 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO {
           'mapping_show' => TRUE,
           'mapping_required' => TRUE,
         ],
-        'fb_costs'                         => [
+        'fb_costs'                      => [
           'name'  => 'fb_costs',
           'type'  => CRM_Utils_Type::T_FLOAT,
           'title' => ts('FB Costs'),
           'mapping_show' => TRUE,
+        ],
+        'premium_revenue'               => [
+            'name'  => 'premium_revenue',
+            'type'  => CRM_Utils_Type::T_FLOAT,
+            'title' => ts('Premium Revenue'),
+            'mapping_show' => TRUE,
+        ],
+        'matching_revenue'              => [
+            'name'  => 'matching_revenue',
+            'type'  => CRM_Utils_Type::T_FLOAT,
+            'title' => ts('Matching'),
+            'mapping_show' => TRUE,
         ],
         'price'                         => [
           'name'  => 'price',

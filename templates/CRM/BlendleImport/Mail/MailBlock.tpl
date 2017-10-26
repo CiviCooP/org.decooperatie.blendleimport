@@ -8,6 +8,8 @@
         <th>Vmoney Amount</th>
         <th>Revenue</th>
         <th>Campaign Costs</th>
+        <th>Premium Revenue</th>
+        <th>Matching</th>
     </tr>
   {foreach from=$data.activities key=aid item=activity}
     <tr>
@@ -19,6 +21,8 @@
         <td align="right">{$activity.activity_vmoney_amount}</td>
         <td align="right">{$activity.activity_revenue}</td>
         <td align="right">{$activity.activity_fb_costs}</td>
+        <td align="right">{$activity.activity_premium_revenue}</td>
+        <td align="right">{$activity.activity_matching_revenue}</td>
     </tr>
    {foreachelse}
     <tr>
