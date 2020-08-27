@@ -82,14 +82,15 @@ class CRM_BlendleImport_Import_CSVReader {
       $record->job_id = $this->job_id;
 
       // First name clean up round (try to get author names from title if necessary)
-      $names = CRM_BlendleImport_Import_MatchFinder::cleanupName($row['byline'], $row['title']);
-      $row['byline'] = implode(' ', $names);
+      $names = CRM_BlendleImport_Import_MatchFinder::cleanupName($row[$mappedFields['byline']], $row[$mappedFields['title']]);
+      if($names === true && !empty($names)) {
+          $row[$mappedFields['byline']] = implode(' ', $names);
+      }
 
       // Check and set parent based on byline (cache)
       $record->parent = NULL;
-      if (!empty($row['byline']) && array_key_exists($row['byline'], $bylineCache)) {
-        $record->parent = $bylineCache[$row['byline']];
-        // error_log("Byline is '{$row['byline']}, seen before, id {$record->parent}.");
+      if (!empty($row[$mappedFields['byline']]) && array_key_exists($row[$mappedFields['byline']], $bylineCache)) {
+        $record->parent = $bylineCache[$row[$mappedFields['byline']]];
       }
 
       // Set all other fields
@@ -111,9 +112,9 @@ class CRM_BlendleImport_Import_CSVReader {
       $record->save();
 
       if ($record->parent == NULL) {
-        $bylineCache[$row['byline']] = $record->id;
-        // error_log("Byline is '{$row['byline']}, not seen before, adding to cache.");
+        $bylineCache[$row[$mappedFields['byline']]] = $record->id;
       }
+
       unset($record);
     }
 
@@ -148,25 +149,33 @@ class CRM_BlendleImport_Import_CSVReader {
 
     // Check line endings
     $data = str_replace("\r", "\n", str_replace("\r\n", "\n", $data));
-    $data = str_getcsv($data, "\n");
 
-    if(count($data) == 0) {
+    if(count(explode("\n", $data)) == 0) {
       return [];
     }
 
     // Try to detect delimiter
     $delimiter = $this->detectCsvDelimiter($data);
-
-    // Return header only?
-    if($onlyHeader) {
-      return str_getcsv($data[0], $delimiter);
-    }
+    echo $delimiter;
 
     // Parse CSV file rows
-    $csv_rows = array_map(function ($line) use ($delimiter) {
-      return str_getcsv($line, $delimiter);
-    }, $data);
-    $header_row = array_shift($csv_rows);
+    // str_getcsv is broken and doesn't understand delimiters within enclosures, using fgetcsv instead
+    $stream = fopen('php://memory', 'r+');
+    fwrite($stream, $data);
+    rewind($stream);
+
+    // Return header only?
+    $header_row = fgetcsv($stream);
+    if($onlyHeader) {
+        return $header_row;
+    }
+
+    // Get rows
+    $csv_rows = [];
+    while($row = fgetcsv($stream, $delimiter)) {
+        $csv_rows[] = $row;
+    }
+    fclose($stream);
 
     // Create array with header row fields as keys
     array_walk($csv_rows, function (&$row, $key, $header) {

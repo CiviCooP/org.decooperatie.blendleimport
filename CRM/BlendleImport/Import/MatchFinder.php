@@ -33,7 +33,6 @@ class CRM_BlendleImport_Import_MatchFinder {
    * @return bool Match found?
    */
   public function match(CRM_BlendleImport_BAO_ImportRecord &$record) {
-
     // Parse names (cleanup is now also executed while importing CSV, but we still need to parse first/last name)
     $names = self::cleanupName($record->byline, $record->title);
 
