@@ -9,28 +9,31 @@
  * @package org.decooperatie.blendleimport
  * @license AGPL-3.0
  */
-class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form {
+class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
+{
 
-  protected $_summary = NULL;
-  protected $_noFields = TRUE;
+    protected $_summary = null;
+    protected $_noFields = true;
 
-  function __construct() {
-    $this->_columns = [
-      'civicrm_activity' => [
-        'filters' => [
-          'import_job_id' => [
-            'title'   => ts('Import Job ID'),
-            'type'    => CRM_Report_Form::OP_INT,
-            'dbAlias' => 'abl.import_job_id_55',
-          ],
-        ],
-      ],
-    ];
-    parent::__construct();
-  }
+    function __construct()
+    {
+        $this->_columns = [
+            'civicrm_activity' => [
+                'filters' => [
+                    'import_job_id' => [
+                        'title'   => ts('Import Job ID'),
+                        'type'    => CRM_Report_Form::OP_INT,
+                        'dbAlias' => 'abl.import_job_id_55',
+                    ],
+                ],
+            ],
+        ];
+        parent::__construct();
+    }
 
-  public function select() {
-    $this->_select = "SELECT 
+    public function select()
+    {
+        $this->_select = "SELECT 
       c.id AS contact_id, 
       c.sort_name AS contact_sort_name,
       e.email AS contact_email,
@@ -48,21 +51,14 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
       abl.author_77 AS activity_author,
       abl.article_title_57 AS activity_article_title,
       abl.sales_count_58 AS activity_sales_count,
-      abl.premium_reads_59 AS activity_premium_reads,
-      abl.refunded_count_60 AS activity_refunded_count,
-      abl.refunded_amount_61 AS activity_refunded_amount,
-      abl.vmoney_amount_62 AS activity_vmoney_amount,
-      abl.sales_amount_63 AS activity_sales_amount,
       abl.revenue_64 AS activity_revenue,
-      abl.price_65 AS activity_article_price,
-      abl.fbcosts_68 AS activity_fb_costs,
-      abl.premium_revenue_79 AS activity_premium_revenue,
-      abl.matching_revenue_80 AS activity_matching_revenue
+      abl.vmoney_amount_62 AS activity_vmoney_amount
       ";
-  }
+    }
 
-  public function from() {
-    $this->_from = "FROM civicrm_value_blendle_import_11 abl
+    public function from()
+    {
+        $this->_from = "FROM civicrm_value_blendle_import_11 abl
       LEFT JOIN civicrm_activity a ON abl.entity_id = a.id
       LEFT JOIN civicrm_activity_contact ac ON a.id = ac.activity_id AND ac.record_type_id = 3
       LEFT JOIN civicrm_contact c ON ac.contact_id = c.id
@@ -75,102 +71,100 @@ class CRM_BlendleImport_Form_Report_BlendleRevenueReport extends CRM_Report_Form
         LEFT JOIN civicrm_activity coac ON co.id = coac.source_record_id AND coac.activity_type_id = 6
       ) coj ON coj.contact_id = c.id AND coj.import_job_id_68 = abl.import_job_id_55
     ";
-  }
-
-  public function where() {
-    parent::where();
-
-    if (empty($this->_whereClauses)) {
-      $this->_where = " WHERE abl.import_job_id_55 IS NOT NULL";
     }
-  }
 
-  function orderBy() {
-    $this->_orderBy = " ORDER BY sort_name ASC, import_job_id ASC, activity_id ASC";
-  }
+    public function where()
+    {
+        parent::where();
 
-  public function preProcess() {
-    $this->assign('reportTitle', ts('Blendle Revenue Report'));
-    return parent::preProcess();
-  }
+        if (empty($this->_whereClauses)) {
+            $this->_where = " WHERE abl.import_job_id_55 IS NOT NULL";
+        }
+    }
 
-  public function postProcess() {
-    $this->_columnHeaders = [
-        'contact_id'                => ['title' => ts('Contact ID'), 'type' => CRM_Report_Form::OP_INT],
-        'contact_sort_name'         => ['title' => ts('Contact Name'), 'type' => CRM_Report_Form::OP_STRING],
-        'contact_email'             => ['title' => ts('Email'), 'type' => CRM_Report_Form::OP_STRING],
-        'ro_wordpress_id'           => ['title' => ts('RO WPID'), 'type' => CRM_Report_Form::OP_STRING],
-        'contribution_id'           => ['title' => ts('Contribution ID'), 'type' => CRM_Report_Form::OP_INT],
-        'contribution_subject'      => ['title' => ts('Contribution'), 'type' => CRM_Report_Form::OP_STRING],
-        'contribution_total_amount' => ['title' => ts('Total Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
-        'contribution_receive_date' => ['title' => ts('Date'), 'type' => CRM_Report_Form::OP_DATE],
-        'activity_id'               => ['title' => ts('Activity ID'), 'type' => CRM_Report_Form::OP_INT],
-        'activity_author'           => ['title' => ts('Author'), 'type' => CRM_Report_Form::OP_STRING],
-        'activity_article_title'    => ['title' => ts('Article Title'), 'type' => CRM_Report_Form::OP_STRING],
-        'activity_sales_count'      => ['title' => ts('Sales Count'), 'type' => CRM_Report_Form::OP_INT],
-        'activity_premium_reads'    => ['title' => ts('Premium Reads'), 'type' => CRM_Report_Form::OP_INT],
-        'activity_refunded_amount'  => ['title' => ts('Refunded Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
-        'activity_vmoney_amount'    => ['title' => ts('Vmoney Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
-        'activity_revenue'          => ['title' => ts('Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
-        'activity_fb_costs'         => ['title' => ts('Campaign Costs'), 'type' => CRM_Report_Form::OP_FLOAT],
-        'activity_premium_revenue'  => ['title' => ts('Premium Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
-        'activity_matching_revenue' => ['title' => ts('Matching'), 'type' => CRM_Report_Form::OP_FLOAT],
-    ];
+    function orderBy()
+    {
+        $this->_orderBy = " ORDER BY sort_name ASC, import_job_id ASC, activity_id ASC";
+    }
 
-    parent::postProcess();
-  }
+    public function preProcess()
+    {
+        $this->assign('reportTitle', ts('Blendle Revenue Report'));
+        return parent::preProcess();
+    }
 
-  public function alterDisplay(&$rows) {
-    $prevContactId = NULL;
-    $prevContributionId = NULL;
+    public function postProcess()
+    {
+        $this->_columnHeaders = [
+            'contact_id'                => ['title' => ts('Contact ID'), 'type' => CRM_Report_Form::OP_INT],
+            'contact_sort_name'         => ['title' => ts('Contact Name'), 'type' => CRM_Report_Form::OP_STRING],
+            'contact_email'             => ['title' => ts('Email'), 'type' => CRM_Report_Form::OP_STRING],
+            'ro_wordpress_id'           => ['title' => ts('RO WPID'), 'type' => CRM_Report_Form::OP_STRING],
+            'contribution_id'           => ['title' => ts('Contribution ID'), 'type' => CRM_Report_Form::OP_INT],
+            'contribution_subject'      => ['title' => ts('Contribution'), 'type' => CRM_Report_Form::OP_STRING],
+            'contribution_total_amount' => ['title' => ts('Total Amount'), 'type' => CRM_Report_Form::OP_FLOAT],
+            'contribution_receive_date' => ['title' => ts('Date'), 'type' => CRM_Report_Form::OP_DATE],
+            'activity_id'               => ['title' => ts('Activity ID'), 'type' => CRM_Report_Form::OP_INT],
+            'activity_author'           => ['title' => ts('Author'), 'type' => CRM_Report_Form::OP_STRING],
+            'activity_article_title'    => ['title' => ts('Article Title'), 'type' => CRM_Report_Form::OP_STRING],
+            'activity_sales_count'      => ['title' => ts('Read Count'), 'type' => CRM_Report_Form::OP_INT],
+            'activity_revenue'          => ['title' => ts('Revenue'), 'type' => CRM_Report_Form::OP_FLOAT],
+            'activity_vmoney_amount'    => ['title' => ts('Donations'), 'type' => CRM_Report_Form::OP_FLOAT],
+        ];
 
-    foreach ($rows as $rowNum => &$row) {
+        parent::postProcess();
+    }
 
-      $hideContactColumn = ($prevContactId == $row['contact_id']);
-      $prevContactId = $row['contact_id'];
+    public function alterDisplay(&$rows)
+    {
+        $prevContactId = null;
+        $prevContributionId = null;
 
-      $hideContributionColumn = ($prevContributionId == $row['contribution_id']);
-      $prevContributionId = $row['contribution_id'];
+        foreach ($rows as $rowNum => &$row) {
 
-      foreach ($row as $colName => $colVal) {
-        if ($hideContactColumn && in_array($colName, ['contact_id', 'contact_sort_name','contact_email','ro_wordpress_id'])) {
-          unset($rows[$rowNum][$colName]);
+            $hideContactColumn = ($prevContactId == $row['contact_id']);
+            $prevContactId = $row['contact_id'];
+
+            $hideContributionColumn = ($prevContributionId == $row['contribution_id']);
+            $prevContributionId = $row['contribution_id'];
+
+            foreach ($row as $colName => $colVal) {
+                if ($hideContactColumn && in_array($colName, ['contact_id', 'contact_sort_name', 'contact_email', 'ro_wordpress_id'])) {
+                    unset($rows[$rowNum][$colName]);
+                }
+
+                if ($hideContributionColumn && in_array($colName, ['contribution_id', 'contribution_subject', 'contribution_total_amount', 'contribution_receive_date'])) {
+                    unset($rows[$rowNum][$colName]);
+                }
+            }
+
+            if (!empty($row['contact_sort_name'])) {
+                $row['contact_sort_name_link'] = CRM_Utils_System::url('civicrm/contact/view', 'reset=1&cid=' . $row['contact_id'], $this->_absoluteUrl);
+                $row['contact_sort_name_hover'] = ts('View Contact');
+            }
+            if (!empty($row['contact_email'])) {
+                $row['contact_email_link'] = 'mailto:' . $row['contact_email'];
+                $row['contact_email_hover'] = ts('Email Contact');
+            }
+            if (!empty($row['contribution_subject'])) {
+                $row['contribution_subject_link'] = CRM_Utils_System::url('civicrm/contact/view/contribution', 'action=view&reset=1&cid=' . $row['contact_id'] . '&id=' . $row['contribution_id'], $this->_absoluteUrl);
+                $row['contribution_subject_hover'] = ts('View Contribution');
+            }
+            if (!empty($row['activity_article_title'])) {
+                $row['activity_article_title_link'] = CRM_Utils_System::url('civicrm/activity', 'action=view&reset=1&cid=' . $row['contact_id'] . '&id=' . $row['activity_id'], $this->_absoluteUrl);
+                $row['activity_article_title_hover'] = ts('View Activity');
+            }
+
+            if ($row['contribution_total_amount'] < 0) {
+                $row['contribution_total_amount'] = number_format(abs($row['contribution_total_amount']), 2, '.', '');
+            }
         }
 
-        if ($hideContributionColumn && in_array($colName, ['contribution_id', 'contribution_subject', 'contribution_total_amount', 'contribution_receive_date'])) {
-          unset($rows[$rowNum][$colName]);
+        if ($this->_outputMode != 'csv') {
+            unset($this->_columnHeaders['contact_id']);
         }
-      }
 
-      if (!empty($row['contact_sort_name'])) {
-        $row['contact_sort_name_link'] = CRM_Utils_System::url('civicrm/contact/view', 'reset=1&cid=' . $row['contact_id'], $this->_absoluteUrl);
-        $row['contact_sort_name_hover'] = ts('View Contact');
-      }
-      if (!empty($row['contact_email'])) {
-        $row['contact_email_link'] = 'mailto:' . $row['contact_email'];
-        $row['contact_email_hover'] = ts('Email Contact');
-      }
-      if (!empty($row['contribution_subject'])) {
-        $row['contribution_subject_link'] = CRM_Utils_System::url('civicrm/contact/view/contribution', 'action=view&reset=1&cid=' . $row['contact_id'] . '&id=' . $row['contribution_id'], $this->_absoluteUrl);
-        $row['contribution_subject_hover'] = ts('View Contribution');
-      }
-      if (!empty($row['activity_article_title'])) {
-        $row['activity_article_title_link'] = CRM_Utils_System::url('civicrm/activity', 'action=view&reset=1&cid=' . $row['contact_id'] . '&id=' . $row['activity_id'], $this->_absoluteUrl);
-        $row['activity_article_title_hover'] = ts('View Activity');
-      }
-
-      if ($row['contribution_total_amount'] < 0) {
-        $row['contribution_total_amount'] = number_format(abs($row['contribution_total_amount']), 2, '.', '');
-      }
+        unset($this->_columnHeaders['contribution_id']);
+        unset($this->_columnHeaders['activity_id']);
     }
-
-    if($this->_outputMode != 'csv') {
-      unset($this->_columnHeaders['contact_id']);
-    }
-
-    unset($this->_columnHeaders['contribution_id']);
-    unset($this->_columnHeaders['activity_id']);
-  }
-
-
 }

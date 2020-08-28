@@ -92,7 +92,7 @@
       {
         "custom_group_id": "11",
         "name": "Sales_Count",
-        "label": "Sales Count",
+        "label": "Read Count",
         "data_type": "Float",
         "html_type": "Text",
         "is_required": "0",
@@ -155,7 +155,7 @@
       {
         "custom_group_id": "11",
         "name": "Vmoney_Amount",
-        "label": "Vmoney Amount",
+        "label": "Donations Amount",
         "data_type": "Money",
         "html_type": "Text",
         "is_required": "0",

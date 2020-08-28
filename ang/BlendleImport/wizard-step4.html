@@ -19,29 +19,17 @@
                         <tr>
                             <th>{{ts('Contact ID')}}</th>
                             <th>{{ts('Title')}}</th>
-                            <th class="no">{{ts('Sales #')}}</th>
-                            <th class="no">{{ts('Premium #')}}</th>
-                            <th class="no">{{ts('Sales €')}}</th>
-                            <th class="no">{{ts('Refunded €')}}</th>
-                            <th class="no">{{ts('Vmoney €')}}</th>
+                            <th class="no">{{ts('Read #')}}</th>
                             <th class="no">{{ts('Revenue €')}}</th>
-                            <th class="no">{{ts('FB Costs')}}</th>
-                            <th class="no">{{ts('Premium Rev')}}</th>
-                            <th class="no">{{ts('Matching')}}</th>
+                            <th class="no">{{ts('Donations €')}}</th>
                         </tr>
                         </thead>
                         <tr ng-repeat="(rowIndex, row) in job_records|limitTo:25" class="crm-importrecord crm-entity">
                             <td>{{row.contact_id}}</td>
                             <td>{{row.title|limitTo:40}}&hellip;</td>
                             <td class="no">{{row.sales_count}}</td>
-                            <td class="no">{{row.premium_reads}}</td>
-                            <td class="no">{{row.sales_amount}}</td>
-                            <td class="no">{{row.refunded_amount}}</td>
-                            <td class="no">{{row.vmoney_amount}}</td>
                             <td class="no">{{row.approximated_revenue_eur}}</td>
-                            <td class="no">{{row.fb_costs}}</td>
-                            <td class="no">{{row.premium_revenue}}</td>
-                            <td class="no">{{row.matching_revenue}}</td>
+                            <td class="no">{{row.vmoney_amount}}</td>
                         </tr>
                     </table>
                     {{row.id}}
