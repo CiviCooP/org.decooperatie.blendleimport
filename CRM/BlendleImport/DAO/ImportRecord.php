@@ -104,21 +104,18 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO
                     'type'             => CRM_Utils_Type::T_INT,
                     'title'            => ts('Read Count'),
                     'mapping_show'     => true,
-                    'mapping_required' => true,
                 ],
                 'approximated_revenue_eur'      => [
                     'name'             => 'approximated_revenue_eur',
                     'type'             => CRM_Utils_Type::T_FLOAT,
                     'title'            => ts('Revenue'),
                     'mapping_show'     => true,
-                    'mapping_required' => true,
                 ],
-                'vmoney_amount'                 => [
-                    'name'             => 'vmoney_amount',
-                    'type'             => CRM_Utils_Type::T_FLOAT,
-                    'title'            => ts('Donations'),
-                    'mapping_show'     => true,
-                    'mapping_required' => true,
+                'premium_revenue'               => [
+                    'name'         => 'premium_revenue',
+                    'type'         => CRM_Utils_Type::T_FLOAT,
+                    'title'        => ts('Donations'),
+                    'mapping_show' => true,
                 ],
                 'premium_reads'                 => [
                     'name'         => 'premium_reads',
@@ -154,16 +151,16 @@ class CRM_BlendleImport_DAO_ImportRecord extends CRM_Core_DAO
                     'type'  => CRM_Utils_Type::T_FLOAT,
                     'title' => ts('Sales Amount'),
                 ],
+                'vmoney_amount'                 => [
+                    'name'             => 'vmoney_amount',
+                    'type'             => CRM_Utils_Type::T_FLOAT,
+                    'title'            => ts('Vmoney Amount'),
+                    'mapping_show'     => true,
+                ],
                 'fb_costs'                      => [
                     'name'         => 'fb_costs',
                     'type'         => CRM_Utils_Type::T_FLOAT,
                     'title'        => ts('FB Costs'),
-                    'mapping_show' => true,
-                ],
-                'premium_revenue'               => [
-                    'name'         => 'premium_revenue',
-                    'type'         => CRM_Utils_Type::T_FLOAT,
-                    'title'        => ts('Premium Revenue'),
                     'mapping_show' => true,
                 ],
                 'matching_revenue'              => [

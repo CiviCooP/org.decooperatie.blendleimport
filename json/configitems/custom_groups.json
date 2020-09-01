@@ -155,7 +155,7 @@
       {
         "custom_group_id": "11",
         "name": "Vmoney_Amount",
-        "label": "Donations Amount",
+        "label": "Vmoney Amount",
         "data_type": "Money",
         "html_type": "Text",
         "is_required": "0",
@@ -215,7 +215,7 @@
       {
         "custom_group_id": "11",
         "name": "Premium_Revenue",
-        "label": "Premium Revenue",
+        "label": "Donations",
         "data_type": "Money",
         "html_type": "Text",
         "is_required": "0",

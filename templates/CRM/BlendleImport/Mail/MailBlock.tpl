@@ -12,7 +12,7 @@
         <td>{$activity.activity_article_title}</td>
         <td align="right">{if $activity.activity_sales_count > 0 }{$activity.activity_sales_count}{else}-{/if}</td>
         <td align="right">{$activity.activity_revenue}</td>
-        <td align="right">{$activity.activity_vmoney_amount}</td>
+        <td align="right">{$activity.activity_premium_revenue}</td>
     </tr>
    {foreachelse}
     <tr>
